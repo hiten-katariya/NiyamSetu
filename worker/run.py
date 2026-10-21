@@ -5,10 +5,17 @@ Runs scheduled jobs independently from the FastAPI API process using APScheduler
 Ensures API startup is not blocked and jobs do not degrade API responsiveness.
 """
 import logging
+import os
 import signal
 import sys
 import time
 from datetime import datetime, timezone
+
+# Ensure repository root is on sys.path
+worker_dir = os.path.dirname(os.path.abspath(__file__))
+repo_root = os.path.dirname(worker_dir)
+if repo_root not in sys.path:
+    sys.path.insert(0, repo_root)
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -27,12 +34,11 @@ def daily_deadline_and_reminder_scan():
     and overdue status. Generates notifications and escalations idempotently.
     """
     logger.info("Running daily deadline and reminder scan...")
-    # In Phase 1 foundation: worker stub reports healthy execution and logs execution
     try:
         from backend.app.core.config import settings
-        logger.info(f"Worker connected with environment: {settings.ENVIRONMENT}")
+        logger.info(f"Worker connected to backend in '{settings.ENVIRONMENT}' environment.")
     except Exception as exc:
-        logger.warning(f"Worker running in standalone mode (backend configuration notice: {exc})")
+        logger.warning(f"Worker backend notice: {exc}")
     logger.info("Daily deadline scan complete. Items scanned: 0 (foundation phase).")
 
 
@@ -40,7 +46,7 @@ def main():
     logger.info("Starting NiyamSetu background worker...")
     scheduler = BlockingScheduler(timezone="UTC")
 
-    # Add daily scan job (runs at UTC 00:00 or configurable intervals)
+    # Add scan job
     scheduler.add_job(
         daily_deadline_and_reminder_scan,
         "interval",
