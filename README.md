@@ -122,22 +122,20 @@ Seed synthetic regions, institutions, test users, demo routes, and sample applic
 python backend/seed/seed_data.py
 ```
 
-### 5. Running the Backend API
-```powershell
-python -m uvicorn backend.app.main:app --reload --port 8000
-```
-Interactive API documentation will be available at:
-- Swagger UI: `http://localhost:8000/docs`
-- Health check: `http://localhost:8000/api/v1/health`
-- Readiness check: `http://localhost:8000/api/v1/health/ready`
+### 5. Running the Backend API and Background Worker (Unified Runner)
+Start both the FastAPI backend and APScheduler worker together with a single command:
+`powershell
+python run_services.py
+`
+*(Or on Windows PowerShell: .\start_services.ps1)*
 
-### 6. Running the Background Worker
-In a separate terminal:
-```powershell
-python worker/run.py
-```
+Both services run as separate decoupled processes. Pressing CTRL+C terminates both gracefully.
+- **Swagger Documentation**: http://localhost:8000/docs
+- **Health & Readiness Check**: http://localhost:8000/api/v1/health/ready
 
-### 7. Running the Frontend
+*(Alternatively, you can run them individually: python -m uvicorn backend.app.main:app --reload --port 8000 and python worker/run.py in separate terminals).*
+
+### 6. Running the Frontend
 ```powershell
 cd frontend
 npm install
