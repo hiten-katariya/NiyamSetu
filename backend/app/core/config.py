@@ -18,8 +18,11 @@ class Settings(BaseSettings):
     # CORS Allowed Origins
     CORS_ORIGINS: Union[List[str], str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
-    # File storage
+    # File storage & security
     STORAGE_LOCAL_DIR: str = "./uploads"
+    MAX_UPLOAD_SIZE_BYTES: int = 10 * 1024 * 1024  # 10 MB default limit
+    ALLOWED_FILE_EXTENSIONS: List[str] = [".pdf", ".png", ".jpg", ".jpeg"]
+    ALLOWED_MIME_TYPES: List[str] = ["application/pdf", "image/png", "image/jpeg"]
 
     # Session & Cookie Security (Server-managed high-entropy sessions)
     SESSION_COOKIE_NAME: str = "niyamsetu_session"

@@ -101,6 +101,39 @@ export async function apiRequest<T>(
   return json.data;
 }
 
+export async function downloadFile(endpoint: string, defaultFilename = 'download'): Promise<void> {
+  const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const response = await fetch(url, {
+    method: 'GET',
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    let errorMsg = `Download failed with status ${response.status}`;
+    try {
+      const err = await response.json();
+      if (err.error?.message) errorMsg = err.error.message;
+    } catch {
+      // ignore
+    }
+    throw new Error(errorMsg);
+  }
+  const blob = await response.blob();
+  const disposition = response.headers.get('Content-Disposition');
+  let filename = defaultFilename;
+  if (disposition && disposition.includes('filename=')) {
+    const match = disposition.match(/filename="?([^";]+)"?/);
+    if (match && match[1]) filename = match[1];
+  }
+  const downloadUrl = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = downloadUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(downloadUrl);
+}
+
 export const api = {
   get: <T>(endpoint: string, options?: RequestInit) =>
     apiRequest<T>(endpoint, { ...options, method: 'GET' }),
@@ -109,6 +142,12 @@ export const api = {
       ...options,
       method: 'POST',
       body: body ? JSON.stringify(body) : undefined,
+    }),
+  postForm: <T>(endpoint: string, formData: FormData, options?: RequestInit) =>
+    apiRequest<T>(endpoint, {
+      ...options,
+      method: 'POST',
+      body: formData,
     }),
   put: <T>(endpoint: string, body?: unknown, options?: RequestInit) =>
     apiRequest<T>(endpoint, {

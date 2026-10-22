@@ -5,9 +5,13 @@ from backend.app.api.v1.endpoints import (
     applications,
     auth,
     dashboard,
+    documents,
     escalations,
+    evc,
+    files,
     health,
     notifications,
+    undertakings,
     workflow,
 )
 
@@ -20,4 +24,8 @@ api_router.include_router(applications.router, prefix="/applications", tags=["Ap
 api_router.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
 api_router.include_router(notifications.router, prefix="/notifications", tags=["Notifications"])
 api_router.include_router(escalations.router, prefix="/escalations", tags=["Escalations"])
+api_router.include_router(evc.router, prefix="/evc", tags=["EVC Management"])
+api_router.include_router(undertakings.router, prefix="/undertakings", tags=["Undertaking Compliance"])
+api_router.include_router(documents.router, prefix="/documents", tags=["Document Validity"])
+api_router.include_router(files.router, prefix="/files", tags=["Secure Files"])
 api_router.include_router(admin.router, prefix="/admin", tags=["Admin & Configuration"])

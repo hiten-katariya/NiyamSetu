@@ -224,3 +224,116 @@ export interface AgeingMetric {
   between_7_14_days: number;
   over_14_days: number;
 }
+
+// ==========================================
+// Phase 5: EVC, Undertakings & Documents
+// ==========================================
+
+export interface EVCMemberItem {
+  id: string;
+  evc_id: string;
+  user_id?: string | null;
+  role_in_committee: string;
+  name: string;
+  designation?: string | null;
+  assigned_at: string;
+}
+
+export interface EVCReportItem {
+  id: string;
+  evc_id: string;
+  report_number: string;
+  recommendation: 'recommended' | 'recommended_with_conditions' | 'not_recommended';
+  key_observations?: string | null;
+  file_id: string;
+  submitted_by_id: string;
+  submitted_at: string;
+  reviewed_by_id?: string | null;
+  reviewed_at?: string | null;
+  review_status: 'pending_review' | 'accepted' | 'returned_for_correction';
+  review_notes?: string | null;
+}
+
+export interface EVCItem {
+  id: string;
+  application_id: string;
+  status: 'queued' | 'scheduled' | 'rescheduled' | 'conducted' | 'report_submitted' | 'completed' | 'cancelled';
+  scheduled_date?: string | null;
+  rescheduled_date?: string | null;
+  reschedule_reason?: string | null;
+  visit_mode: 'physical' | 'hybrid' | 'virtual';
+  conducted_date?: string | null;
+  visit_summary?: string | null;
+  created_at: string;
+  updated_at: string;
+  application_number?: string | null;
+  institution_name?: string | null;
+  members: EVCMemberItem[];
+  reports: EVCReportItem[];
+}
+
+export interface UndertakingSubmissionItem {
+  id: string;
+  undertaking_id: string;
+  submitted_by_id: string;
+  file_id?: string | null;
+  remarks?: string | null;
+  status: 'submitted' | 'accepted' | 'rejected' | 'returned_for_correction';
+  reviewed_by_id?: string | null;
+  review_comments?: string | null;
+  submitted_at: string;
+  reviewed_at?: string | null;
+}
+
+export interface UndertakingItem {
+  id: string;
+  application_id?: string | null;
+  institution_id: string;
+  condition_title: string;
+  condition_description?: string | null;
+  status: 'pending' | 'submitted' | 'fulfilled' | 'overdue' | 'returned';
+  due_date: string;
+  fulfilled_date?: string | null;
+  created_at: string;
+  updated_at: string;
+  institution_name?: string | null;
+  application_number?: string | null;
+  submissions: UndertakingSubmissionItem[];
+}
+
+export interface DocumentRenewalItem {
+  id: string;
+  document_id: string;
+  renewal_status: 'initiated' | 'in_progress' | 'completed' | 'cancelled';
+  initiated_at: string;
+  completed_at?: string | null;
+  replacement_document_id?: string | null;
+  remarks?: string | null;
+}
+
+export interface DocumentItem {
+  id: string;
+  institution_id: string;
+  application_id?: string | null;
+  file_id: string;
+  document_type: string;
+  title: string;
+  document_number?: string | null;
+  issuing_authority?: string | null;
+  valid_from?: string | null;
+  valid_to?: string | null;
+  status: 'pending_verification' | 'verified' | 'rejected' | 'expired' | 'renewal_pending';
+  verified_by_id?: string | null;
+  verified_at?: string | null;
+  verification_notes?: string | null;
+  created_at: string;
+  updated_at: string;
+  institution_name?: string | null;
+  application_number?: string | null;
+  original_filename?: string | null;
+  file_size_bytes?: number | null;
+  is_expired: boolean;
+  is_expiring_soon: boolean;
+  renewals: DocumentRenewalItem[];
+}
+

@@ -92,7 +92,7 @@ def get_dashboard_summary(
     pending_evc = (
         db.scalar(
             select(func.count()).select_from(
-                evc_query.where(EVC.status.in_(["queued", "scheduled"])).subquery()
+                evc_query.where(EVC.status.in_(["queued", "scheduled", "conducted"])).subquery()
             )
         )
         or 0
@@ -100,7 +100,7 @@ def get_dashboard_summary(
     pending_undertakings = (
         db.scalar(
             select(func.count()).select_from(
-                undertaking_query.where(Undertaking.status == "pending").subquery()
+                undertaking_query.where(Undertaking.status.in_(["pending", "submitted", "returned", "overdue"])).subquery()
             )
         )
         or 0

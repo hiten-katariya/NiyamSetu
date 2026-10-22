@@ -200,6 +200,8 @@ class FileRecord(Base, UUIDPrimaryKeyMixin):
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
     )
 
+    uploaded_by: Mapped[Optional["User"]] = relationship("User", foreign_keys=[uploaded_by_user_id])
+
 
 class EVC(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     __tablename__ = "evcs"
@@ -219,6 +221,7 @@ class EVC(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     application: Mapped["Application"] = relationship("Application", back_populates="evcs")
+    assigned_region: Mapped[Optional["Region"]] = relationship("Region", foreign_keys=[assigned_region_id])
     members: Mapped[List["EVCMember"]] = relationship("EVCMember", back_populates="evc", cascade="all, delete-orphan")
     reports: Mapped[List["EVCReport"]] = relationship("EVCReport", back_populates="evc", cascade="all, delete-orphan")
 
@@ -239,6 +242,7 @@ class EVCMember(Base, UUIDPrimaryKeyMixin):
     )
 
     evc: Mapped["EVC"] = relationship("EVC", back_populates="members")
+    user: Mapped[Optional["User"]] = relationship("User", foreign_keys=[user_id])
 
 
 class EVCReport(Base, UUIDPrimaryKeyMixin):
@@ -264,6 +268,9 @@ class EVCReport(Base, UUIDPrimaryKeyMixin):
     review_comments: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     evc: Mapped["EVC"] = relationship("EVC", back_populates="reports")
+    file: Mapped["FileRecord"] = relationship("FileRecord", foreign_keys=[file_id])
+    submitted_by: Mapped["User"] = relationship("User", foreign_keys=[submitted_by_user_id])
+    reviewed_by: Mapped[Optional["User"]] = relationship("User", foreign_keys=[reviewed_by_user_id])
 
 
 class Undertaking(Base, UUIDPrimaryKeyMixin, TimestampMixin):
@@ -286,6 +293,8 @@ class Undertaking(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     verification_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     application: Mapped["Application"] = relationship("Application", back_populates="undertakings")
+    institution: Mapped["Institution"] = relationship("Institution", foreign_keys=[assigned_institution_id])
+    verified_by: Mapped[Optional["User"]] = relationship("User", foreign_keys=[verified_by_user_id])
     submissions: Mapped[List["UndertakingSubmission"]] = relationship(
         "UndertakingSubmission", back_populates="undertaking", cascade="all, delete-orphan"
     )
@@ -315,6 +324,9 @@ class UndertakingSubmission(Base, UUIDPrimaryKeyMixin):
     review_comments: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     undertaking: Mapped["Undertaking"] = relationship("Undertaking", back_populates="submissions")
+    file: Mapped["FileRecord"] = relationship("FileRecord", foreign_keys=[file_id])
+    submitted_by: Mapped["User"] = relationship("User", foreign_keys=[submitted_by_user_id])
+    reviewed_by: Mapped[Optional["User"]] = relationship("User", foreign_keys=[reviewed_by_user_id])
 
 
 class Document(Base, UUIDPrimaryKeyMixin, TimestampMixin):
@@ -344,6 +356,9 @@ class Document(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     )
 
     institution: Mapped["Institution"] = relationship("Institution", back_populates="documents")
+    application: Mapped[Optional["Application"]] = relationship("Application", foreign_keys=[application_id])
+    verified_by: Mapped[Optional["User"]] = relationship("User", foreign_keys=[verified_by_user_id])
+    created_by: Mapped[Optional["User"]] = relationship("User", foreign_keys=[created_by_user_id])
     renewals: Mapped[List["DocumentRenewal"]] = relationship(
         "DocumentRenewal", foreign_keys="DocumentRenewal.document_id", back_populates="document", cascade="all, delete-orphan"
     )
@@ -366,6 +381,8 @@ class DocumentRenewal(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     reviewed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     document: Mapped["Document"] = relationship("Document", foreign_keys=[document_id], back_populates="renewals")
+    replacement_document: Mapped[Optional["Document"]] = relationship("Document", foreign_keys=[replacement_document_id])
+    reviewed_by: Mapped[Optional["User"]] = relationship("User", foreign_keys=[reviewed_by_user_id])
 
 
 class ReminderRule(Base, UUIDPrimaryKeyMixin, TimestampMixin):
