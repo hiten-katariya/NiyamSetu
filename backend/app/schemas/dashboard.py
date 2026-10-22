@@ -50,3 +50,56 @@ class AttentionItemResponse(BaseModel):
     days_in_stage: int
     due_date: Optional[datetime] = None
     priority: str  # critical, high, medium, normal
+
+
+class VolumeTrendPoint(BaseModel):
+    date: str
+    submitted: int
+    completed: int
+
+
+class RegionalMetricItem(BaseModel):
+    region_id: Optional[uuid.UUID] = None
+    region_name: str
+    total_applications: int
+    in_progress: int
+    overdue: int
+    completed: int
+
+
+class EVCAnalyticsResponse(BaseModel):
+    scheduled_count: int
+    conducted_count: int
+    pending_reports: int
+    reviewed_reports: int
+    recommended_count: int
+    conditions_count: int
+    not_recommended_count: int
+
+
+class UndertakingAnalyticsResponse(BaseModel):
+    total_conditions: int
+    pending_evidence: int
+    submitted_under_review: int
+    fulfilled: int
+    overdue: int
+    returned: int
+
+
+class DocumentAnalyticsResponse(BaseModel):
+    valid_count: int
+    expiring_soon_count: int
+    expired_count: int
+    pending_verification_count: int
+    renewals_in_progress: int
+
+
+class OperationalSummaryResponse(BaseModel):
+    open_escalations: int
+    resolved_escalations: int
+    unread_notifications: int
+    total_notifications: int
+    worker_status: str
+    last_scan_at: Optional[datetime] = None
+    failure_count: int
+

@@ -17,6 +17,7 @@ def get_health():
 
 
 @router.get("/health/ready", summary="Readiness Check")
+@router.get("/health/readiness", summary="Readiness Check Alias")
 def get_readiness():
     """
     Readiness check verifying database connectivity and dependent services.

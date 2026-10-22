@@ -1154,4 +1154,42 @@ Audit records are append-only. The application must not expose ordinary update o
 - Generate and maintain the interactive OpenAPI specification through FastAPI.
 - Document any endpoint or permission change and cover it with automated tests.
 
+
+## 24. Phase 6: Analytics, Reporting, Configurable Administration & Monitoring Endpoints
+
+### 24.1 Role-Scoped Analytics (`/dashboard`)
+- `GET /api/v1/dashboard/volume-trends`: Monthly application intake and resolution trends.
+  - Query parameters: `start_date`, `end_date`, `region_id`, `institution_id`, `route_type_id`, `status`.
+- `GET /api/v1/dashboard/regional-comparison`: Cross-region comparison of applications, approvals, pendencies, and overdue rates.
+  - Scoping: Apex AICTE officials and administrators only. Rejects institution users with `403 Forbidden`.
+- `GET /api/v1/dashboard/evc-analytics`: EVC scheduling status, outcome distribution, and visit metrics.
+- `GET /api/v1/dashboard/undertaking-analytics`: Undertaking compliance rates, verification rates, and overdue counts.
+- `GET /api/v1/dashboard/document-analytics`: Document health, expiry horizons (30d, 60d, 90d), and renewal queue.
+- `GET /api/v1/dashboard/operational-summary`: High-level operational summary with pending actions and SLA breach counts.
+
+### 24.2 Standard Statutory Reporting (`/reports`)
+- `GET /api/v1/reports/types`: List available report types with required scopes and metadata.
+- `POST /api/v1/reports/preview`: Live paginated preview of report data with total count and column schemas.
+- `POST /api/v1/reports/export`: Direct streaming CSV export.
+  - Supported report codes: `application_pendency`, `application_ageing`, `evc_status`, `undertaking_compliance`, `document_validity`, `escalations_audit`.
+  - Security protections: Max 2000 rows limit, Formula Injection sanitization (`=`, `+`, `-`, `@`, `\t`, `\r` escaped with `'`), UTF-8 BOM encoding (`\ufeff`), and audit log record generation on every export.
+
+### 24.3 Configurable Administration (`/admin`)
+- `PATCH /api/v1/admin/stages/{stage_id}`: Update stage parameters (`timeline_days`, `grace_period_days`, `is_active`). Requires `change_reason`. Pinned versions of active applications are preserved.
+- `GET|POST|PUT|DELETE /api/v1/admin/rules/reminders`: Full CRUD for automated reminder rules with mandatory change reason.
+- `GET|POST|PUT|DELETE /api/v1/admin/rules/escalations`: Full CRUD for multi-tier escalation rules with mandatory change reason.
+- `GET|POST|DELETE /api/v1/admin/holidays`: Manage regional/national holiday calendar with duplicate prevention.
+- `GET|PUT /api/v1/admin/message-templates`: Manage notification and escalation notification message templates.
+- `GET /api/v1/admin/config/versions`: Query historical configuration snapshots and change reason audits.
+
+### 24.4 Cryptographic Audit Trail Explorer (`/audit`)
+- `GET /api/v1/audit/logs`: Filtered, paginated audit log entries with previous/current hash verification.
+- `GET /api/v1/audit/verify-integrity`: Validates the complete SHA-256 hash chain from genesis to head.
+
+### 24.5 Operational Worker & Notification Monitoring (`/monitoring`)
+- `GET /api/v1/monitoring/worker`: Inspect scheduler run history, job execution status, and next scheduled runs.
+- `GET /api/v1/monitoring/notifications`: Inspect pending notification queues, delivery logs, and retry attempts.
+- `GET /api/v1/health/readiness`: Alias for container/system readiness probes.
+
+
 End of API Specification

@@ -145,6 +145,35 @@ Open `http://localhost:5173` to access the portal.
 
 ---
 
+## Operational Hardening & PostgreSQL Maintenance
+
+### 1. Dedicated Local PostgreSQL Backup (pg_dump)
+To create a complete logical backup of the dedicated `niyamsetu_dev` database:
+```powershell
+# From local terminal:
+pg_dump -U niyamsetu_user -h localhost -d niyamsetu_dev -F c -b -v -f "niyamsetu_backup_$(Get-Date -Format 'yyyyMMdd_HHmmss').dump"
+```
+Or as plain SQL:
+```powershell
+pg_dump -U niyamsetu_user -h localhost -d niyamsetu_dev -F p -f "niyamsetu_backup_$(Get-Date -Format 'yyyyMMdd_HHmmss').sql"
+```
+
+### 2. Database Restore (psql / pg_restore)
+To restore a snapshot into `niyamsetu_dev`:
+```powershell
+# For custom-format (.dump):
+pg_restore -U niyamsetu_user -h localhost -d niyamsetu_dev -v -c "niyamsetu_backup.dump"
+
+# For plain SQL (.sql):
+psql -U niyamsetu_user -h localhost -d niyamsetu_dev -f "niyamsetu_backup.sql"
+```
+*(Note: Never run restore commands against unrelated databases such as mailtrace).*
+
+### 3. CSV Formula Injection Defense
+All report CSV downloads escape characters `=`, `+`, `-`, `@`, `\t`, `\r` with a prepended single quote (`'`), neutralizing executable spreadsheet macros and DDE attacks in Microsoft Excel. Files are exported with UTF-8 BOM (`\ufeff`) to prevent character encoding distortion.
+
+---
+
 ## Testing & Verification
 
 Run the backend automated test suite:

@@ -337,3 +337,178 @@ export interface DocumentItem {
   renewals: DocumentRenewalItem[];
 }
 
+// ==========================================
+// Phase 6: Analytics, Reporting & Administration
+// ==========================================
+
+export interface VolumeTrendPoint {
+  date: string;
+  submitted: number;
+  completed: number;
+}
+
+export interface RegionalMetricItem {
+  region_id?: string | null;
+  region_name: string;
+  total_applications: number;
+  in_progress: number;
+  overdue: number;
+  completed: number;
+}
+
+export interface EVCAnalyticsResponse {
+  scheduled_count: number;
+  conducted_count: number;
+  pending_reports: number;
+  reviewed_reports: number;
+  recommended_count: number;
+  conditions_count: number;
+  not_recommended_count: number;
+}
+
+export interface UndertakingAnalyticsResponse {
+  total_conditions: number;
+  pending_evidence: number;
+  submitted_under_review: number;
+  fulfilled: number;
+  overdue: number;
+  returned: number;
+}
+
+export interface DocumentAnalyticsResponse {
+  valid_count: number;
+  expiring_soon_count: number;
+  expired_count: number;
+  pending_verification_count: number;
+  renewals_in_progress: number;
+}
+
+export interface OperationalSummaryResponse {
+  open_escalations: number;
+  resolved_escalations: number;
+  unread_notifications: number;
+  total_notifications: number;
+  worker_status: string;
+  last_scan_at?: string | null;
+  failure_count: number;
+}
+
+export interface ReportColumn {
+  key: string;
+  label: string;
+}
+
+export interface ReportTypeInfo {
+  code: string;
+  name: string;
+  description: string;
+  supported_filters: string[];
+}
+
+export interface ReportPreviewResponse {
+  report_type: string;
+  report_title: string;
+  generated_at: string;
+  columns: ReportColumn[];
+  rows: Array<Record<string, unknown>>;
+  total_rows: number;
+  page: number;
+  page_size: number;
+}
+
+export interface ReminderRuleItem {
+  id: string;
+  name: string;
+  target_type: string;
+  days_before_due: number;
+  recipient_roles: string[];
+  is_active: boolean;
+}
+
+export interface EscalationRuleItem {
+  id: string;
+  name: string;
+  target_type: string;
+  level: number;
+  days_after_due: number;
+  recipient_roles: string[];
+  is_active: boolean;
+}
+
+export interface HolidayItem {
+  id: string;
+  region_id?: string | null;
+  holiday_date: string;
+  name: string;
+  created_at: string;
+}
+
+export interface MessageTemplateItem {
+  id: string;
+  code: string;
+  channel: string;
+  subject_template: string;
+  body_template: string;
+  is_active: boolean;
+  updated_at: string;
+}
+
+export interface ConfigVersionItem {
+  id: string;
+  config_type: string;
+  version: number;
+  changed_by_user_id?: string | null;
+  change_summary: string;
+  created_at: string;
+}
+
+export interface AuditLogItem {
+  id: string;
+  actor_user_id?: string | null;
+  actor_name?: string | null;
+  action: string;
+  entity_type: string;
+  entity_id: string;
+  occurred_at: string;
+  ip_address?: string | null;
+  metadata_?: Record<string, unknown> | null;
+  entry_hash: string;
+}
+
+export interface AuditVerificationResponse {
+  is_valid: boolean;
+  verified_count: number;
+  error_message?: string | null;
+}
+
+export interface SchedulerRunItem {
+  id: string;
+  job_name: string;
+  started_at: string;
+  finished_at?: string | null;
+  status: string;
+  items_scanned: number;
+  items_processed: number;
+  duration_seconds?: number | null;
+  error_summary?: string | null;
+}
+
+export interface WorkerMonitoringResponse {
+  status: string;
+  last_run?: SchedulerRunItem | null;
+  last_successful_run?: SchedulerRunItem | null;
+  latest_failed_run?: SchedulerRunItem | null;
+  recent_runs: SchedulerRunItem[];
+  total_runs: number;
+  success_runs: number;
+  failed_runs: number;
+}
+
+export interface NotificationMonitoringResponse {
+  unread_count: number;
+  read_count: number;
+  acknowledged_count: number;
+  total_count: number;
+}
+
+
