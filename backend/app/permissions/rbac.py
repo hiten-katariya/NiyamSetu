@@ -53,7 +53,7 @@ def check_resource_access(
     - REGIONAL_OFFICER can only access resources in their assigned region.
     - INSTITUTION_USER can only access resources belonging to their institution.
     """
-    if user_role in {UserRole.SYSTEM_ADMIN, UserRole.BUREAU_OFFICER, UserRole.SENIOR_AUTHORITY}:
+    if user_role in {UserRole.SYSTEM_ADMIN, UserRole.ADMIN, UserRole.BUREAU_OFFICER, UserRole.SENIOR_AUTHORITY}:
         return True
 
     if user_role == UserRole.INSTITUTION_USER:

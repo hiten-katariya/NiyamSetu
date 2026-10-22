@@ -15,13 +15,14 @@ This document details the PostgreSQL relational schema, entity relationships, in
 
 ---
 
-## 2. Entity Summary (24 Entities)
+## 2. Entity Summary (25 Entities)
 
 | Table | Purpose | Primary Key | Key Foreign Keys |
 |---|---|---|---|
 | `regions` | Administrative regional offices | UUID | None |
 | `institutions` | Managed institutions | UUID | `region_id -> regions.id` |
 | `users` | Authenticated system users | UUID | `region_id`, `institution_id` |
+| `user_sessions` | Server-managed authenticated sessions | UUID | `user_id -> users.id` |
 | `route_types` | Configurable workflow routes | UUID | None |
 | `route_stages` | Ordered stages for a route version | UUID | `route_type_id -> route_types.id` |
 | `applications` | Approval applications & active state | UUID | `institution_id`, `route_type_id`, `current_stage_id`, `assigned_to_user_id` |
@@ -52,6 +53,7 @@ This document details the PostgreSQL relational schema, entity relationships, in
   - `regions(code)`
   - `institutions(institution_code)`
   - `users(email)`
+  - `user_sessions(session_token_hash)` (never stores raw unhashed tokens)
   - `route_types(code)`
   - `route_stages(route_type_id, route_version, stage_code)`
   - `route_stages(route_type_id, route_version, sequence)`
@@ -61,6 +63,9 @@ This document details the PostgreSQL relational schema, entity relationships, in
   - `notifications(dedupe_key)` (enforces idempotent alert delivery)
   - `message_templates(code)`
 - **Performance Indexes**:
+  - `user_sessions(user_id)`
+  - `user_sessions(expires_at)`
+  - `user_sessions(revoked_at)`
   - `applications(status)`
   - `applications(institution_id)`
   - `applications(route_type_id, route_version)`

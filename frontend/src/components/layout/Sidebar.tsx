@@ -10,25 +10,119 @@ import {
   FileBarChart2,
   Sliders,
   LogOut,
+  UserCheck,
 } from 'lucide-react';
+import { useAuth } from '../../app/AuthContext';
+import { UserRole } from '../../types';
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const navItems = [
+interface NavItemConfig {
+  name: string;
+  path: string;
+  icon: React.ElementType;
+  allowedRoles?: UserRole[];
+}
+
+const navItems: NavItemConfig[] = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-  { name: 'Applications', path: '/applications', icon: FileSpreadsheet },
-  { name: 'EVC Queue', path: '/evc', icon: CalendarClock },
-  { name: 'Compliance & Undertakings', path: '/compliance', icon: ShieldCheck },
-  { name: 'Document Validity', path: '/documents', icon: FolderLock },
+  {
+    name: 'Applications',
+    path: '/applications',
+    icon: FileSpreadsheet,
+    allowedRoles: [
+      'admin',
+      'system_admin',
+      'institution_user',
+      'scrutiny_officer',
+      'regional_officer',
+      'bureau_officer',
+      'senior_authority',
+    ],
+  },
+  {
+    name: 'EVC Queue',
+    path: '/evc',
+    icon: CalendarClock,
+    allowedRoles: [
+      'admin',
+      'system_admin',
+      'regional_officer',
+      'committee_member',
+      'bureau_officer',
+      'senior_authority',
+    ],
+  },
+  {
+    name: 'Compliance & Undertakings',
+    path: '/compliance',
+    icon: ShieldCheck,
+    allowedRoles: [
+      'admin',
+      'system_admin',
+      'institution_user',
+      'regional_officer',
+      'scrutiny_officer',
+      'bureau_officer',
+      'senior_authority',
+    ],
+  },
+  {
+    name: 'Document Validity',
+    path: '/documents',
+    icon: FolderLock,
+    allowedRoles: [
+      'admin',
+      'system_admin',
+      'institution_user',
+      'scrutiny_officer',
+      'regional_officer',
+      'committee_member',
+      'bureau_officer',
+      'senior_authority',
+    ],
+  },
   { name: 'Notifications & Alerts', path: '/notifications', icon: BellRing },
-  { name: 'Reports & Audit', path: '/reports', icon: FileBarChart2 },
-  { name: 'Admin Configuration', path: '/admin', icon: Sliders },
+  {
+    name: 'Reports & Audit',
+    path: '/reports',
+    icon: FileBarChart2,
+    allowedRoles: [
+      'admin',
+      'system_admin',
+      'regional_officer',
+      'bureau_officer',
+      'senior_authority',
+    ],
+  },
+  {
+    name: 'Admin Configuration',
+    path: '/admin',
+    icon: Sliders,
+    allowedRoles: ['admin', 'system_admin'],
+  },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const { user, logout, hasRole, scope } = useAuth();
+
+  const filteredNavItems = navItems.filter((item) => {
+    if (!item.allowedRoles) return true;
+    return hasRole(item.allowedRoles);
+  });
+
+  const getScopeBadge = () => {
+    if (!scope) return 'Role-Based Access';
+    if (scope.all_regions && scope.all_institutions) return 'National Oversight';
+    if (scope.region_id) return 'Regional Jurisdiction';
+    if (scope.institution_id) return 'Institutional Scope';
+    if (scope.assigned_committees && scope.assigned_committees.length > 0) return 'Committee Duty';
+    return 'Scrutiny Desk';
+  };
+
   return (
     <>
       {/* Mobile overlay */}
@@ -61,7 +155,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </div>
 
         <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
+          {filteredNavItems.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
@@ -85,16 +179,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         <div className="p-4 border-t border-niyam-border">
           <div className="p-3 rounded-md bg-niyam-surface-alt border border-niyam-border mb-3">
-            <p className="text-xs font-semibold text-niyam-text">Demonstration Build</p>
-            <p className="text-[11px] text-niyam-text-muted mt-0.5">Phase 1 Foundation Setup</p>
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-niyam-text mb-1">
+              <UserCheck className="w-3.5 h-3.5 text-niyam-primary" />
+              <span>{getScopeBadge()}</span>
+            </div>
+            <p className="text-[11px] text-niyam-text-muted truncate">
+              {user ? user.email : 'Authenticated Session'}
+            </p>
           </div>
-          <NavLink
-            to="/login"
-            className="flex items-center gap-2 text-xs font-semibold text-niyam-text-muted hover:text-niyam-status-danger px-2 py-1.5 transition-colors"
+          <button
+            type="button"
+            onClick={() => logout()}
+            className="w-full flex items-center gap-2 text-xs font-semibold text-niyam-text-muted hover:text-niyam-status-danger px-2 py-1.5 transition-colors rounded hover:bg-red-50 text-left"
           >
             <LogOut className="w-4 h-4" />
-            <span>Switch / Sign Out</span>
-          </NavLink>
+            <span>Sign Out</span>
+          </button>
         </div>
       </aside>
     </>

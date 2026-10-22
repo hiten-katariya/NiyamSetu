@@ -24,6 +24,7 @@ from backend.app.models.entities import (
     Undertaking,
     UndertakingSubmission,
     User,
+    UserSession,
 )
 
 __all__ = [
@@ -31,6 +32,7 @@ __all__ = [
     "Region",
     "Institution",
     "User",
+    "UserSession",
     "RouteType",
     "RouteStage",
     "Application",

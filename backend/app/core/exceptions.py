@@ -23,50 +23,50 @@ class AppException(Exception):
 
 
 class NotFoundError(AppException):
-    def __init__(self, message: str = "Resource not found", details: Optional[List[Dict[str, Any]]] = None):
+    def __init__(self, message: str = "Resource not found", details: Optional[List[Dict[str, Any]]] = None, code: str = "NOT_FOUND"):
         super().__init__(
             message=message,
-            code="NOT_FOUND",
+            code=code,
             status_code=status.HTTP_404_NOT_FOUND,
             details=details,
         )
 
 
 class UnauthorizedError(AppException):
-    def __init__(self, message: str = "Authentication required", details: Optional[List[Dict[str, Any]]] = None):
+    def __init__(self, message: str = "Authentication required", details: Optional[List[Dict[str, Any]]] = None, code: str = "UNAUTHORIZED"):
         super().__init__(
             message=message,
-            code="UNAUTHORIZED",
+            code=code,
             status_code=status.HTTP_401_UNAUTHORIZED,
             details=details,
         )
 
 
 class ForbiddenError(AppException):
-    def __init__(self, message: str = "Insufficient permissions", details: Optional[List[Dict[str, Any]]] = None):
+    def __init__(self, message: str = "Insufficient permissions", details: Optional[List[Dict[str, Any]]] = None, code: str = "FORBIDDEN"):
         super().__init__(
             message=message,
-            code="FORBIDDEN",
+            code=code,
             status_code=status.HTTP_403_FORBIDDEN,
             details=details,
         )
 
 
 class ConflictError(AppException):
-    def __init__(self, message: str = "Conflict with existing resource", details: Optional[List[Dict[str, Any]]] = None):
+    def __init__(self, message: str = "Conflict with existing resource", details: Optional[List[Dict[str, Any]]] = None, code: str = "CONFLICT"):
         super().__init__(
             message=message,
-            code="CONFLICT",
+            code=code,
             status_code=status.HTTP_409_CONFLICT,
             details=details,
         )
 
 
 class ValidationError(AppException):
-    def __init__(self, message: str = "Validation failed", details: Optional[List[Dict[str, Any]]] = None):
+    def __init__(self, message: str = "Validation failed", details: Optional[List[Dict[str, Any]]] = None, code: str = "VALIDATION_ERROR"):
         super().__init__(
             message=message,
-            code="VALIDATION_ERROR",
+            code=code,
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             details=details,
         )

@@ -16,21 +16,64 @@ export class ApiClientError extends Error {
   }
 }
 
+/**
+ * Extracts a cookie value by name from document.cookie safely.
+ */
+export function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+  return match ? decodeURIComponent(match[3]) : null;
+}
+
+/**
+ * Ensures a CSRF cookie exists before state-changing operations.
+ */
+async function ensureCsrfToken(): Promise<string | null> {
+  let token = getCookie('niyamsetu_csrf');
+  if (!token) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/csrf`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const json = await res.json();
+        token = json.data?.csrf_token || getCookie('niyamsetu_csrf');
+      }
+    } catch {
+      // Best effort; backend will reject if token is strictly required
+    }
+  }
+  return token;
+}
+
 export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
-  
-  const token = localStorage.getItem('niyamsetu_token');
+  const method = (options.method || 'GET').toUpperCase();
   const headers = new Headers(options.headers || {});
-  headers.set('Content-Type', 'application/json');
-  if (token && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${token}`);
+
+  if (!headers.has('Content-Type') && options.body && typeof options.body === 'string') {
+    headers.set('Content-Type', 'application/json');
   }
 
+  // Attach Anti-CSRF token for state-changing HTTP methods
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+    let csrfToken = getCookie('niyamsetu_csrf');
+    if (!csrfToken) {
+      csrfToken = await ensureCsrfToken();
+    }
+    if (csrfToken && !headers.has('X-CSRF-Token')) {
+      headers.set('X-CSRF-Token', csrfToken);
+    }
+  }
+
+  // Always include HTTP credentials (cookies) for server-side session management
   const response = await fetch(url, {
     ...options,
+    credentials: 'include',
     headers,
   });
 
@@ -67,4 +110,18 @@ export const api = {
       method: 'POST',
       body: body ? JSON.stringify(body) : undefined,
     }),
+  put: <T>(endpoint: string, body?: unknown, options?: RequestInit) =>
+    apiRequest<T>(endpoint, {
+      ...options,
+      method: 'PUT',
+      body: body ? JSON.stringify(body) : undefined,
+    }),
+  patch: <T>(endpoint: string, body?: unknown, options?: RequestInit) =>
+    apiRequest<T>(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body: body ? JSON.stringify(body) : undefined,
+    }),
+  delete: <T>(endpoint: string, options?: RequestInit) =>
+    apiRequest<T>(endpoint, { ...options, method: 'DELETE' }),
 };

@@ -1,16 +1,28 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Shield } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Shield, KeyRound, AlertTriangle } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
-import { api, ApiClientError } from '../../lib/apiClient';
+import { ApiClientError } from '../../lib/apiClient';
+import { useAuth } from '../../app/AuthContext';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isAuthenticated } = useAuth();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // If already authenticated, redirect to destination or home
+  useEffect(() => {
+    if (isAuthenticated) {
+      const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,15 +35,18 @@ export const LoginPage: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const data = await api.post<{ access_token: string }>('/auth/login', {
-        email,
-        password,
-      });
-      localStorage.setItem('niyamsetu_token', data.access_token);
-      navigate('/');
+      await login(email, password);
+      const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/';
+      navigate(from, { replace: true });
     } catch (err) {
       if (err instanceof ApiClientError) {
-        setError(err.message);
+        if (err.status === 429) {
+          setError('Too many failed login attempts. Please wait 5 minutes before trying again.');
+        } else if (err.status === 403) {
+          setError('Account has been deactivated. Contact the system administrator.');
+        } else {
+          setError(err.message || 'Invalid email or password.');
+        }
       } else {
         setError('Login request failed. Verify backend service is running.');
       }
@@ -62,8 +77,9 @@ export const LoginPage: React.FC = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-niyam-surface py-8 px-6 shadow-sm border border-niyam-border rounded-lg sm:px-10">
           {error && (
-            <div className="mb-4 p-3 rounded bg-niyam-status-danger-bg border border-red-200 text-niyam-status-danger text-xs font-medium">
-              {error}
+            <div className="mb-4 p-3 rounded bg-red-50 border border-red-200 text-niyam-status-danger text-xs font-medium flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -136,7 +152,28 @@ export const LoginPage: React.FC = () => {
               >
                 System Admin
               </button>
+              <button
+                type="button"
+                onClick={() => fillDemoCredentials('committee.member@niyamsetu.local')}
+                className="p-1.5 rounded border border-niyam-border hover:bg-niyam-surface-alt text-left text-[11px] font-medium text-niyam-text"
+              >
+                Committee Member
+              </button>
+              <button
+                type="button"
+                onClick={() => fillDemoCredentials('senior.authority@niyamsetu.local')}
+                className="p-1.5 rounded border border-niyam-border hover:bg-niyam-surface-alt text-left text-[11px] font-medium text-niyam-text"
+              >
+                Senior Authority
+              </button>
             </div>
+          </div>
+
+          <div className="mt-4 p-2.5 rounded bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-1.5">
+            <KeyRound className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-700" />
+            <span>
+              All demonstration accounts use password: <code className="font-mono bg-amber-100 px-1 rounded">ChangeMeDev123!</code>
+            </span>
           </div>
         </div>
       </div>

@@ -1,15 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/apiClient';
 import { ReadinessCheckData } from '../../types';
+import { useAuth } from '../../app/AuthContext';
+import { Shield, LogOut } from 'lucide-react';
 
 export const Header: React.FC<{ onMenuToggle: () => void }> = ({ onMenuToggle }) => {
   const [readiness, setReadiness] = useState<ReadinessCheckData | null>(null);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     api.get<ReadinessCheckData>('/health/ready')
       .then(setReadiness)
       .catch(() => setReadiness(null));
   }, []);
+
+  const getInitials = (name?: string) => {
+    if (!name) return 'NS';
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const formatRole = (role?: string) => {
+    if (!role) return 'Authorized User';
+    return role
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
 
   return (
     <header className="h-16 bg-niyam-surface border-b border-niyam-border sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6">
@@ -51,20 +71,33 @@ export const Header: React.FC<{ onMenuToggle: () => void }> = ({ onMenuToggle })
           </span>
         </div>
 
-        <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-100 text-amber-800 border border-amber-200">
-          Demo Environment
+        <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-amber-100 text-amber-800 border border-amber-200">
+          <Shield className="w-3 h-3 text-amber-700" />
+          <span>Demo Environment</span>
         </span>
 
-        {/* User profile avatar / pill */}
-        <div className="flex items-center gap-2 pl-2 border-l border-niyam-border">
-          <div className="w-8 h-8 rounded-full bg-niyam-primary-tint text-niyam-primary font-semibold text-xs flex items-center justify-center">
-            SO
+        {/* User profile avatar & details */}
+        {user && (
+          <div className="flex items-center gap-3 pl-2 border-l border-niyam-border">
+            <div className="w-8 h-8 rounded-full bg-niyam-primary-tint text-niyam-primary font-bold text-xs flex items-center justify-center border border-niyam-border">
+              {getInitials(user.full_name)}
+            </div>
+            <div className="hidden md:block text-left text-xs">
+              <p className="font-semibold text-niyam-text leading-tight">{user.full_name}</p>
+              <p className="text-niyam-text-muted text-[11px] font-medium">
+                {formatRole(user.role)}
+              </p>
+            </div>
+            <button
+              onClick={() => logout()}
+              title="Sign Out"
+              className="p-1.5 rounded text-niyam-text-muted hover:text-niyam-status-danger hover:bg-niyam-surface-alt transition-colors"
+              aria-label="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
-          <div className="hidden md:block text-left text-xs">
-            <p className="font-semibold text-niyam-text leading-tight">Scrutiny Officer</p>
-            <p className="text-niyam-text-muted text-[11px]">Regional Desk</p>
-          </div>
-        </div>
+        )}
       </div>
     </header>
   );

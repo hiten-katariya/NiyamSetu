@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '../components/layout/AppShell';
+import { ProtectedRoute } from '../components/ProtectedRoute';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
 import { ApplicationsListPage } from '../features/applications/ApplicationsListPage';
 import { EVCListPage } from '../features/evc/EVCListPage';
@@ -9,6 +10,7 @@ import { NotificationsPage } from '../features/notifications/NotificationsPage';
 import { ReportsPage } from '../features/reports/ReportsPage';
 import { AdminConfigPage } from '../features/admin/AdminConfigPage';
 import { LoginPage } from '../features/auth/LoginPage';
+import { AccessDeniedPage } from '../features/auth/AccessDeniedPage';
 
 export const router = createBrowserRouter([
   {
@@ -16,8 +18,16 @@ export const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
+    path: '/access-denied',
+    element: <AccessDeniedPage />,
+  },
+  {
     path: '/',
-    element: <AppShell />,
+    element: (
+      <ProtectedRoute>
+        <AppShell />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
@@ -25,19 +35,75 @@ export const router = createBrowserRouter([
       },
       {
         path: 'applications',
-        element: <ApplicationsListPage />,
+        element: (
+          <ProtectedRoute
+            allowedRoles={[
+              'admin',
+              'system_admin',
+              'institution_user',
+              'scrutiny_officer',
+              'regional_officer',
+              'bureau_officer',
+              'senior_authority',
+            ]}
+          >
+            <ApplicationsListPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'evc',
-        element: <EVCListPage />,
+        element: (
+          <ProtectedRoute
+            allowedRoles={[
+              'admin',
+              'system_admin',
+              'regional_officer',
+              'committee_member',
+              'bureau_officer',
+              'senior_authority',
+            ]}
+          >
+            <EVCListPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'compliance',
-        element: <ComplianceListPage />,
+        element: (
+          <ProtectedRoute
+            allowedRoles={[
+              'admin',
+              'system_admin',
+              'institution_user',
+              'regional_officer',
+              'scrutiny_officer',
+              'bureau_officer',
+              'senior_authority',
+            ]}
+          >
+            <ComplianceListPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'documents',
-        element: <DocumentsListPage />,
+        element: (
+          <ProtectedRoute
+            allowedRoles={[
+              'admin',
+              'system_admin',
+              'institution_user',
+              'scrutiny_officer',
+              'regional_officer',
+              'committee_member',
+              'bureau_officer',
+              'senior_authority',
+            ]}
+          >
+            <DocumentsListPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'notifications',
@@ -45,11 +111,27 @@ export const router = createBrowserRouter([
       },
       {
         path: 'reports',
-        element: <ReportsPage />,
+        element: (
+          <ProtectedRoute
+            allowedRoles={[
+              'admin',
+              'system_admin',
+              'regional_officer',
+              'bureau_officer',
+              'senior_authority',
+            ]}
+          >
+            <ReportsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'admin',
-        element: <AdminConfigPage />,
+        element: (
+          <ProtectedRoute allowedRoles={['admin', 'system_admin']}>
+            <AdminConfigPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

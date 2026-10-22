@@ -5,7 +5,8 @@ export type UserRole =
   | 'bureau_officer'
   | 'committee_member'
   | 'senior_authority'
-  | 'system_admin';
+  | 'system_admin'
+  | 'admin';
 
 export interface User {
   id: string;
@@ -15,6 +16,29 @@ export interface User {
   region_id?: string | null;
   institution_id?: string | null;
   is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PermittedScope {
+  scope_type: string;
+  region_id?: string | null;
+  institution_id?: string | null;
+  assigned_committees: string[];
+  all_regions: boolean;
+  all_institutions: boolean;
+}
+
+export interface UserProfile {
+  user: User;
+  permissions: string[];
+  permitted_scope: PermittedScope;
+}
+
+export interface LoginResponse {
+  message: string;
+  csrf_token: string;
+  user: User;
 }
 
 export interface ApiResponse<T> {

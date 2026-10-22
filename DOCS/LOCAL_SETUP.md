@@ -98,7 +98,17 @@ Load synthetic regions, institutions, demo role accounts, sample routes, and moc
 python backend/seed/seed_data.py
 ```
 
-### D. Start Backend API Server
+### D. Bootstrap Administrative User (CLI)
+Create a dedicated system administrator safely via CLI with interactive password prompt or random generation:
+```powershell
+# Interactive prompt:
+python backend/app/commands/create_admin.py --email admin.ops@niyamsetu.local --name "Operations Lead"
+
+# Or with specified password:
+python backend/app/commands/create_admin.py --email admin.ops@niyamsetu.local --name "Operations Lead" --password "YourStrongPassword123!"
+```
+
+### E. Start Backend API Server
 ```powershell
 python -m uvicorn backend.app.main:app --reload --port 8000
 ```

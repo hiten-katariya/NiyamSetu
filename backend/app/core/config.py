@@ -1,5 +1,5 @@
 import json
-from typing import List, Union
+from typing import List, Optional, Union
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -20,6 +20,19 @@ class Settings(BaseSettings):
 
     # File storage
     STORAGE_LOCAL_DIR: str = "./uploads"
+
+    # Session & Cookie Security (Server-managed high-entropy sessions)
+    SESSION_COOKIE_NAME: str = "niyamsetu_session"
+    CSRF_COOKIE_NAME: str = "niyamsetu_csrf"
+    CSRF_HEADER_NAME: str = "X-CSRF-Token"
+    SESSION_EXPIRE_SECONDS: int = 86400  # 24 hours
+    COOKIE_SECURE: bool = False  # False for local HTTP development; set True for HTTPS deployments
+    COOKIE_SAMESITE: str = "lax"
+    COOKIE_DOMAIN: Optional[str] = None
+
+    # Login Rate Limiting (in-memory protection against brute force)
+    LOGIN_RATE_LIMIT_MAX_ATTEMPTS: int = 5
+    LOGIN_RATE_LIMIT_WINDOW_SECONDS: int = 300  # 5 minutes
 
     # Seed passwords (for local development seeding only)
     SEED_ADMIN_PASSWORD: str = "ChangeMeDev123!"

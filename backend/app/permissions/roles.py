@@ -9,11 +9,18 @@ class UserRole(str, Enum):
     BUREAU_OFFICER = "bureau_officer"
     COMMITTEE_MEMBER = "committee_member"
     SENIOR_AUTHORITY = "senior_authority"
+    ADMIN = "admin"
     SYSTEM_ADMIN = "system_admin"
 
     @classmethod
     def all_roles(cls) -> List[str]:
         return [r.value for r in cls]
+
+
+def normalize_role(role_str: str) -> UserRole:
+    if role_str in ("admin", "system_admin"):
+        return UserRole.SYSTEM_ADMIN
+    return UserRole(role_str)
 
 
 class Permission(str, Enum):
@@ -122,6 +129,9 @@ ROLE_PERMISSIONS: dict[UserRole, Set[Permission]] = {
         Permission.AUDIT_VERIFY,
     },
     UserRole.SYSTEM_ADMIN: {
+        perm for perm in Permission
+    },
+    UserRole.ADMIN: {
         perm for perm in Permission
     },
 }
