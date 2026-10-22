@@ -423,6 +423,9 @@ class Notification(Base, UUIDPrimaryKeyMixin):
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
     )
 
+    recipient: Mapped["User"] = relationship("User", foreign_keys=[recipient_user_id])
+    application: Mapped[Optional["Application"]] = relationship("Application", foreign_keys=[application_id])
+
 
 class Escalation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     __tablename__ = "escalations"
@@ -442,6 +445,9 @@ class Escalation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     )
     resolved_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     resolution_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    application: Mapped[Optional["Application"]] = relationship("Application", foreign_keys=[application_id])
+    assigned_to_user: Mapped[Optional["User"]] = relationship("User", foreign_keys=[assigned_to_user_id])
 
 
 class SchedulerRun(Base, UUIDPrimaryKeyMixin):

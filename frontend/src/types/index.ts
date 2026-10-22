@@ -164,3 +164,63 @@ export interface ApplicationDetail extends ApplicationItem {
   history: StageHistory[];
   available_actions: string[];
 }
+
+
+export interface NotificationItem {
+  id: string;
+  recipient_user_id: string;
+  application_id?: string | null;
+  target_type: string;
+  target_id: string;
+  channel: string;
+  title: string;
+  body: string;
+  status: 'unread' | 'read' | 'acknowledged';
+  sent_at: string;
+  read_at?: string | null;
+  created_at: string;
+}
+
+export interface EscalationItem {
+  id: string;
+  application_id?: string | null;
+  target_type: string;
+  target_id: string;
+  level: number;
+  assigned_to_user_id?: string | null;
+  assigned_to_name?: string | null;
+  status: 'open' | 'resolved';
+  triggered_at: string;
+  resolved_at?: string | null;
+  resolution_notes?: string | null;
+  application_number?: string | null;
+  institution_name?: string | null;
+}
+
+export interface AttentionItem {
+  id: string;
+  application_number: string;
+  institution_name: string;
+  current_stage_name: string;
+  status: 'overdue' | 'due_soon' | 'on_hold' | 'returned';
+  reason: string;
+  days_in_stage: number;
+  due_date?: string | null;
+  priority: 'critical' | 'high' | 'medium' | 'normal';
+}
+
+export interface PendencyMetrics {
+  total_pending: number;
+  by_stage: Record<string, number>;
+  by_region: Record<string, number>;
+  overdue_count: number;
+  on_hold_count: number;
+  due_soon_count: number;
+}
+
+export interface AgeingMetric {
+  stage_name: string;
+  under_7_days: number;
+  between_7_14_days: number;
+  over_14_days: number;
+}

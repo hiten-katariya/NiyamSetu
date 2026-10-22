@@ -2,17 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../../lib/apiClient';
 import { ReadinessCheckData } from '../../types';
 import { useAuth } from '../../app/AuthContext';
-import { Shield, LogOut } from 'lucide-react';
+import { Shield, LogOut, Bell } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const Header: React.FC<{ onMenuToggle: () => void }> = ({ onMenuToggle }) => {
   const [readiness, setReadiness] = useState<ReadinessCheckData | null>(null);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
   const { user, logout } = useAuth();
 
   useEffect(() => {
     api.get<ReadinessCheckData>('/health/ready')
       .then(setReadiness)
       .catch(() => setReadiness(null));
-  }, []);
+
+    if (user) {
+      api.get<{ unread_count: number }>('/notifications/unread-count')
+        .then((res) => setUnreadCount(res.unread_count))
+        .catch(() => setUnreadCount(0));
+    }
+  }, [user]);
 
   const getInitials = (name?: string) => {
     if (!name) return 'NS';
@@ -75,6 +83,23 @@ export const Header: React.FC<{ onMenuToggle: () => void }> = ({ onMenuToggle })
           <Shield className="w-3 h-3 text-amber-700" />
           <span>Demo Environment</span>
         </span>
+
+        {/* Notifications Bell */}
+        {user && (
+          <Link
+            to="/notifications"
+            className="relative p-2 rounded text-niyam-text-muted hover:text-niyam-primary hover:bg-niyam-surface-alt transition-colors"
+            title="Notifications & Alerts"
+            aria-label="Notifications"
+          >
+            <Bell className="w-4 h-4" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-niyam-status-danger text-white text-[10px] font-bold leading-none">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </Link>
+        )}
 
         {/* User profile avatar & details */}
         {user && (

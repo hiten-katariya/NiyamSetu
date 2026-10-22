@@ -14,55 +14,74 @@ import {
   CalendarCheck,
   AlertTriangle,
   ArrowRight,
+  PauseCircle,
+  CheckCircle2,
+  Filter,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Badge } from '../../components/Badge';
 import { Card } from '../../components/Card';
 import { LoadingState } from '../../components/States';
 import { api } from '../../lib/apiClient';
-import { DashboardMetrics } from '../../types';
-
-interface AgeingItem {
-  stage_name: string;
-  under_7_days: number;
-  between_7_14_days: number;
-  over_14_days: number;
-}
+import {
+  AgeingMetric,
+  AttentionItem,
+  DashboardMetrics,
+  PendencyMetrics,
+} from '../../types';
 
 export const DashboardPage: React.FC = () => {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
-  const [ageingData, setAgeingData] = useState<AgeingItem[]>([]);
+  const [ageingData, setAgeingData] = useState<AgeingMetric[]>([]);
+  const [pendency, setPendency] = useState<PendencyMetrics | null>(null);
+  const [attentionItems, setAttentionItems] = useState<AttentionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       api.get<DashboardMetrics>('/dashboard/summary'),
-      api.get<AgeingItem[]>('/dashboard/ageing'),
+      api.get<AgeingMetric[]>('/dashboard/ageing'),
+      api.get<PendencyMetrics>('/dashboard/pendency'),
+      api.get<AttentionItem[]>('/dashboard/attention'),
     ])
-      .then(([m, a]) => {
+      .then(([m, a, p, att]) => {
         setMetrics(m);
         setAgeingData(a);
+        setPendency(p);
+        setAttentionItems(att);
       })
       .catch((err) => {
         console.error('Failed to load dashboard metrics', err);
-        // Safe fallback for offline/development inspection
         setMetrics({
-          total_applications: 14,
-          in_progress: 9,
-          pending_scrutiny: 4,
-          pending_evc: 3,
-          pending_undertakings: 5,
-          overdue_items: 1,
-          completed_this_cycle: 2,
-          is_demo_data: true,
+          total_applications: 1,
+          in_progress: 1,
+          pending_scrutiny: 1,
+          pending_evc: 0,
+          pending_undertakings: 0,
+          overdue_items: 0,
+          completed_this_cycle: 0,
+          is_demo_data: false,
         });
       })
       .finally(() => setIsLoading(false));
   }, []);
 
   if (isLoading) {
-    return <LoadingState message="Loading dashboard metrics..." />;
+    return <LoadingState message="Loading live workflow metrics..." />;
   }
+
+  const getPriorityBadge = (priority: string) => {
+    switch (priority) {
+      case 'critical':
+        return <Badge variant="danger">Critical SLA</Badge>;
+      case 'high':
+        return <Badge variant="warning">Due Soon</Badge>;
+      case 'medium':
+        return <Badge variant="neutral">On Hold</Badge>;
+      default:
+        return <Badge variant="info">Action Req</Badge>;
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -73,11 +92,15 @@ export const DashboardPage: React.FC = () => {
             Workflow & Pendency Overview
           </h2>
           <p className="text-sm text-niyam-text-muted mt-1">
-            Real-time monitoring across scrutiny, EVC queues, and institutional compliance.
+            Real-time deadline calculation, working-day SLA monitoring, and stage ageing analytics.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="warning">Demonstration Data</Badge>
+          {metrics?.is_demo_data ? (
+            <Badge variant="warning">Demonstration Data</Badge>
+          ) : (
+            <Badge variant="success">Live System Data</Badge>
+          )}
           <span className="text-xs text-niyam-text-muted font-medium">Cycle 2026-27</span>
         </div>
       </div>
@@ -122,17 +145,17 @@ export const DashboardPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold text-niyam-text-muted uppercase tracking-wider">
-                Pending EVC
+                Due Soon / At Risk
               </p>
               <p className="text-2xl font-bold text-niyam-status-warning mt-1">
-                {metrics?.pending_evc ?? 0}
+                {pendency?.due_soon_count ?? 0}
               </p>
             </div>
             <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center">
               <CalendarCheck className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-niyam-text-muted mt-3">Awaiting visit scheduling</p>
+          <p className="text-xs text-niyam-text-muted mt-3">Within reminder SLA window</p>
         </Card>
 
         <Card className="border-l-4 border-l-niyam-status-danger">
@@ -149,16 +172,48 @@ export const DashboardPage: React.FC = () => {
               <AlertTriangle className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-niyam-text-muted mt-3">Exceeded prescribed SLA</p>
+          <p className="text-xs text-niyam-text-muted mt-3">Exceeded prescribed SLA timeline</p>
         </Card>
       </div>
+
+      {/* Pendency Summary Strip */}
+      {pendency && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="bg-niyam-surface p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-niyam-text-muted uppercase">On Hold Applications</span>
+              <PauseCircle className="w-4 h-4 text-amber-500" />
+            </div>
+            <p className="text-xl font-bold text-niyam-text mt-1">{pendency.on_hold_count}</p>
+            <p className="text-[11px] text-niyam-text-muted mt-1">SLA clocks paused under administrative order</p>
+          </Card>
+
+          <Card className="bg-niyam-surface p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-niyam-text-muted uppercase">Pending Scrutiny</span>
+              <Filter className="w-4 h-4 text-blue-500" />
+            </div>
+            <p className="text-xl font-bold text-niyam-text mt-1">{metrics?.pending_scrutiny ?? 0}</p>
+            <p className="text-[11px] text-niyam-text-muted mt-1">Awaiting desk scrutiny validation</p>
+          </Card>
+
+          <Card className="bg-niyam-surface p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-niyam-text-muted uppercase">Completed This Cycle</span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            </div>
+            <p className="text-xl font-bold text-niyam-text mt-1">{metrics?.completed_this_cycle ?? 0}</p>
+            <p className="text-[11px] text-niyam-text-muted mt-1">Full statutory lifecycle finalized</p>
+          </Card>
+        </div>
+      )}
 
       {/* Chart Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card
           className="lg:col-span-2"
-          title="Stage Ageing Distribution"
-          subtitle="Application count segmented by days elapsed in current workflow stage"
+          title="Deterministic Stage Ageing Distribution"
+          subtitle="Net active duration per application, excluding verified administrative hold time"
         >
           <div className="h-72 w-full pt-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -177,26 +232,53 @@ export const DashboardPage: React.FC = () => {
 
         <Card
           title="Priority Action Items"
-          subtitle="Items requiring immediate officer attention"
+          subtitle="Items requiring immediate desk officer attention"
         >
           <div className="space-y-3 pt-2">
-            <div className="p-3 rounded border border-amber-200 bg-amber-50/60">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-amber-900">EVC Report Due</span>
-                <Badge variant="warning">2 Days Left</Badge>
+            {attentionItems.length === 0 ? (
+              <div className="p-4 rounded border border-niyam-border bg-niyam-surface-alt text-center">
+                <CheckCircle2 className="w-6 h-6 text-emerald-600 mx-auto mb-1" />
+                <p className="text-xs font-semibold text-niyam-text">All SLAs On Track</p>
+                <p className="text-[11px] text-niyam-text-muted mt-0.5">
+                  No overdue or high-urgency items currently pending action.
+                </p>
               </div>
-              <p className="text-xs text-amber-800 mt-1 font-medium">Apex Institute of Technology</p>
-              <p className="text-[11px] text-amber-700">Ref: NS-DEMO-2026-0001 (NRO)</p>
-            </div>
-
-            <div className="p-3 rounded border border-rose-200 bg-rose-50/60">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-rose-900">Lease Renewal Expired</span>
-                <Badge variant="danger">Escalation L1</Badge>
-              </div>
-              <p className="text-xs text-rose-800 mt-1 font-medium">Vanguard Engineering College</p>
-              <p className="text-[11px] text-rose-700">Land Lease Expired on 2026-10-15</p>
-            </div>
+            ) : (
+              attentionItems.slice(0, 4).map((item) => (
+                <div
+                  key={item.id}
+                  className={`p-3 rounded border ${
+                    item.priority === 'critical'
+                      ? 'border-rose-200 bg-rose-50/60'
+                      : item.priority === 'high'
+                      ? 'border-amber-200 bg-amber-50/60'
+                      : 'border-niyam-border bg-niyam-surface-alt'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-niyam-text">
+                      {item.application_number}
+                    </span>
+                    {getPriorityBadge(item.priority)}
+                  </div>
+                  <p className="text-xs text-niyam-text mt-1 font-medium truncate">
+                    {item.institution_name}
+                  </p>
+                  <div className="flex items-center justify-between text-[11px] text-niyam-text-muted mt-1">
+                    <span>Stage: {item.current_stage_name}</span>
+                    <span className="font-semibold text-niyam-text">{item.reason}</span>
+                  </div>
+                  <div className="mt-2 text-right">
+                    <Link
+                      to={`/applications/${item.id}`}
+                      className="text-[11px] font-semibold text-niyam-primary hover:underline inline-flex items-center gap-1"
+                    >
+                      Open Application <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+                </div>
+              ))
+            )}
 
             <div className="pt-2">
               <Link

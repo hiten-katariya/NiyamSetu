@@ -1,4 +1,6 @@
-from typing import Dict, List
+from datetime import datetime
+from typing import Dict, List, Optional
+import uuid
 from pydantic import BaseModel
 
 
@@ -27,3 +29,24 @@ class RegionalSummary(BaseModel):
     pending_count: int
     evc_due_count: int
     overdue_count: int
+
+
+class PendencyMetrics(BaseModel):
+    total_pending: int
+    by_stage: Dict[str, int]
+    by_region: Dict[str, int]
+    overdue_count: int
+    on_hold_count: int
+    due_soon_count: int
+
+
+class AttentionItemResponse(BaseModel):
+    id: uuid.UUID
+    application_number: str
+    institution_name: str
+    current_stage_name: str
+    status: str  # overdue, due_soon, on_hold, returned
+    reason: str
+    days_in_stage: int
+    due_date: Optional[datetime] = None
+    priority: str  # critical, high, medium, normal

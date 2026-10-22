@@ -1,9 +1,11 @@
 """
 NiyamSetu Background Worker Process.
 
-Runs scheduled jobs independently from the FastAPI API process using APScheduler.
+Runs scheduled deadline scans, automated reminders, and escalations
+independently from the FastAPI API process using APScheduler.
 Ensures API startup is not blocked and jobs do not degrade API responsiveness.
 """
+import argparse
 import logging
 import os
 import signal
@@ -18,6 +20,7 @@ if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 
 from apscheduler.schedulers.blocking import BlockingScheduler
+from worker.deadline_scan import execute_deadline_scan
 
 # Configure logging
 logging.basicConfig(
@@ -30,23 +33,35 @@ logger = logging.getLogger("niyamsetu.worker")
 
 def daily_deadline_and_reminder_scan():
     """
-    Scans applications, undertakings, documents, and EVCs for approaching due dates
-    and overdue status. Generates notifications and escalations idempotently.
+    Executes the deadline scan and reminder/escalation processing.
     """
-    logger.info("Running daily deadline and reminder scan...")
+    logger.info("Executing scheduled deadline, reminder, and escalation scan...")
     try:
-        from backend.app.core.config import settings
-        logger.info(f"Worker connected to backend in '{settings.ENVIRONMENT}' environment.")
+        res = execute_deadline_scan()
+        logger.info(f"Scan completed: {res}")
     except Exception as exc:
-        logger.warning(f"Worker backend notice: {exc}")
-    logger.info("Daily deadline scan complete. Items scanned: 0 (foundation phase).")
+        logger.error(f"Error during scheduled scan: {exc}", exc_info=True)
 
 
 def main():
-    logger.info("Starting NiyamSetu background worker...")
+    parser = argparse.ArgumentParser(description="NiyamSetu Background Worker Process")
+    parser.add_argument(
+        "--once",
+        action="store_true",
+        help="Execute a single deadline scan and exit immediately (useful for testing and CLI cron jobs).",
+    )
+    args = parser.parse_args()
+
+    if args.once:
+        logger.info("Running single deadline scan via --once flag...")
+        res = execute_deadline_scan()
+        logger.info(f"Single scan finished: {res}")
+        sys.exit(0 if res.get("status") == "success" else 1)
+
+    logger.info("Starting NiyamSetu background worker daemon (APScheduler)...")
     scheduler = BlockingScheduler(timezone="UTC")
 
-    # Add scan job
+    # Add scheduled scan job (every 60 minutes)
     scheduler.add_job(
         daily_deadline_and_reminder_scan,
         "interval",
