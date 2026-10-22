@@ -3,6 +3,7 @@ import { AppShell } from '../components/layout/AppShell';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
 import { ApplicationsListPage } from '../features/applications/ApplicationsListPage';
+import { ApplicationDetailPage } from '../features/applications/ApplicationDetailPage';
 import { EVCListPage } from '../features/evc/EVCListPage';
 import { ComplianceListPage } from '../features/compliance/ComplianceListPage';
 import { DocumentsListPage } from '../features/documents/DocumentsListPage';
@@ -48,6 +49,25 @@ export const router = createBrowserRouter([
             ]}
           >
             <ApplicationsListPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'applications/:id',
+        element: (
+          <ProtectedRoute
+            allowedRoles={[
+              'admin',
+              'system_admin',
+              'institution_user',
+              'scrutiny_officer',
+              'regional_officer',
+              'bureau_officer',
+              'committee_member',
+              'senior_authority',
+            ]}
+          >
+            <ApplicationDetailPage />
           </ProtectedRoute>
         ),
       },

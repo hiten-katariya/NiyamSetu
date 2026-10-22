@@ -149,7 +149,10 @@ class Application(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     closed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     institution: Mapped["Institution"] = relationship("Institution", back_populates="applications")
-    history: Mapped[List["StageHistory"]] = relationship("StageHistory", back_populates="application")
+    route_type: Mapped["RouteType"] = relationship("RouteType")
+    current_stage: Mapped[Optional["RouteStage"]] = relationship("RouteStage", foreign_keys=[current_stage_id])
+    assigned_to_user: Mapped[Optional["User"]] = relationship("User", foreign_keys=[assigned_to_user_id])
+    history: Mapped[List["StageHistory"]] = relationship("StageHistory", back_populates="application", order_by="StageHistory.performed_at.asc()")
     evcs: Mapped[List["EVC"]] = relationship("EVC", back_populates="application")
     undertakings: Mapped[List["Undertaking"]] = relationship("Undertaking", back_populates="application")
 
@@ -177,6 +180,9 @@ class StageHistory(Base, UUIDPrimaryKeyMixin):
     metadata_: Mapped[Optional[Dict[str, Any]]] = mapped_column("metadata", JsonType, nullable=True)
 
     application: Mapped["Application"] = relationship("Application", back_populates="history")
+    from_stage: Mapped[Optional["RouteStage"]] = relationship("RouteStage", foreign_keys=[from_stage_id])
+    to_stage: Mapped[Optional["RouteStage"]] = relationship("RouteStage", foreign_keys=[to_stage_id])
+    performed_by: Mapped["User"] = relationship("User", foreign_keys=[performed_by_user_id])
 
 
 class FileRecord(Base, UUIDPrimaryKeyMixin):
