@@ -15,7 +15,7 @@ from backend.app.schemas.monitoring import (
     WorkerMonitoringResponse,
 )
 
-router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter(dependencies=[Depends(get_current_user), Depends(require_roles(UserRole.ADMIN, UserRole.SYSTEM_ADMIN))])
 
 
 @router.get("/worker", response_model=DataResponse[WorkerMonitoringResponse], summary="Worker Operational Health")
