@@ -48,7 +48,7 @@ export const Navbar: React.FC = () => {
       <div className="liquid-container !py-0 flex items-center justify-between">
         {/* Brand */}
         <Link
-          to="/"
+          to="/landing"
           className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-niyam-focus rounded-lg p-1"
           aria-label="NiyamSetu Home"
         >
@@ -92,7 +92,7 @@ export const Navbar: React.FC = () => {
         <div className="hidden sm:flex items-center gap-3">
           {isAuthenticated ? (
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/')}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-niyam-primary text-white text-sm font-bold shadow-xs hover:bg-niyam-primary-hover transition-all focus-visible:ring-2 focus-visible:ring-niyam-focus"
             >
               <User className="w-4 h-4" />
@@ -123,7 +123,7 @@ export const Navbar: React.FC = () => {
         <div className="flex sm:hidden items-center gap-2">
           {isAuthenticated && (
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/')}
               className="px-3 py-1.5 text-xs font-bold bg-niyam-primary text-white rounded-md"
             >
               Portal

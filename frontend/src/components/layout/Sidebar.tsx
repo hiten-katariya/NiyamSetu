@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import {
   LayoutDashboard,
   FileSpreadsheet,
@@ -11,6 +11,7 @@ import {
   Sliders,
   LogOut,
   UserCheck,
+  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../../app/AuthContext';
 import { UserRole } from '../../types';
@@ -28,7 +29,7 @@ interface NavItemConfig {
 }
 
 const navItems: NavItemConfig[] = [
-  { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+  { name: 'Dashboard', path: '/', icon: LayoutDashboard },
   {
     name: 'Applications',
     path: '/applications',
@@ -161,14 +162,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <NavLink
                 key={item.path}
                 to={item.path}
+                end={item.path === '/'}
                 onClick={() => onClose()}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-                    isActive
+                className={({ isActive }) => {
+                  const active =
+                    isActive ||
+                    (item.path === '/' &&
+                      (window.location.pathname === '/' || window.location.pathname === '/dashboard'));
+                  return `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                    active
                       ? 'bg-niyam-primary text-white shadow-xs'
                       : 'text-niyam-text hover:bg-niyam-surface-alt hover:text-niyam-primary'
-                  }`
-                }
+                  }`;
+                }}
               >
                 <Icon className="w-4 h-4 shrink-0" />
                 <span>{item.name}</span>
@@ -176,6 +182,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             );
           })}
         </nav>
+
+        <div className="px-3 pb-2">
+          <Link
+            to="/landing"
+            onClick={() => onClose()}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold text-niyam-text-muted hover:text-niyam-primary hover:bg-niyam-surface-alt transition-colors border border-dashed border-niyam-border hover:border-niyam-primary/40"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span>Public Showcase</span>
+          </Link>
+        </div>
 
         <div className="p-4 border-t border-niyam-border">
           <div className="p-3 rounded-md bg-niyam-surface-alt border border-niyam-border mb-3">

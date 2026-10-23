@@ -16,7 +16,11 @@ import { AccessDeniedPage } from '../features/auth/AccessDeniedPage';
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/landing',
+    element: <LandingPage />,
+  },
+  {
+    path: '/overview',
     element: <LandingPage />,
   },
   {
@@ -34,6 +38,10 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
+      {
+        path: '/',
+        element: <DashboardPage />,
+      },
       {
         path: '/dashboard',
         element: <DashboardPage />,

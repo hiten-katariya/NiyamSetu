@@ -58,7 +58,7 @@ export const Hero: React.FC = () => {
           {/* Action CTAs */}
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-14">
             <button
-              onClick={() => navigate(isAuthenticated ? '/dashboard' : '/login')}
+              onClick={() => navigate(isAuthenticated ? '/' : '/login')}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-niyam-primary text-white text-base font-bold shadow-md hover:bg-niyam-primary-hover hover:shadow-lg transition-all focus-visible:ring-2 focus-visible:ring-niyam-focus"
             >
               <span>{isAuthenticated ? 'Enter Portal Dashboard' : 'Access Authorized Portal'}</span>

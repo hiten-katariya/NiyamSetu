@@ -31,7 +31,7 @@ export const FinalCta: React.FC = () => {
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
-            onClick={() => navigate(isAuthenticated ? '/dashboard' : '/login')}
+            onClick={() => navigate(isAuthenticated ? '/' : '/login')}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white text-niyam-primary text-base font-extrabold shadow-lg hover:bg-blue-50 transition-all hover:scale-105 focus-visible:ring-2 focus-visible:ring-white"
           >
             <span>{isAuthenticated ? 'Open Authorized Dashboard' : 'Access Authorized Portal'}</span>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Shield, KeyRound, AlertTriangle } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
@@ -19,7 +19,7 @@ export const LoginPage: React.FC = () => {
   // If already authenticated, redirect to destination or dashboard
   useEffect(() => {
     if (isAuthenticated) {
-      const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/dashboard';
+      const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/';
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, navigate, location]);
@@ -36,7 +36,7 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
     try {
       await login(email, password);
-      const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/dashboard';
+      const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/';
       navigate(from, { replace: true });
     } catch (err) {
       if (err instanceof ApiClientError) {
@@ -174,6 +174,15 @@ export const LoginPage: React.FC = () => {
             <span>
               All demonstration accounts use password: <code className="font-mono bg-amber-100 px-1 rounded">ChangeMeDev123!</code>
             </span>
+          </div>
+
+          <div className="mt-4 text-center">
+            <Link
+              to="/landing"
+              className="text-xs font-semibold text-niyam-primary hover:text-niyam-primary-hover hover:underline transition-colors"
+            >
+              &larr; View Public Platform Overview &amp; Interactive Showcase
+            </Link>
           </div>
         </div>
       </div>
