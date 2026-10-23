@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#EEF4FC" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1F4E8C" />
+      <stop offset="100%" stop-color="#2B6CD4" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#1F4E8C" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="600" fill="url(#bgGrad)" />
+  <rect x="20" y="20" width="560" height="560" rx="24" fill="none" stroke="#DDE3EC" stroke-width="2" />
+
+  <!-- Card Top Badge -->
+  <rect x="50" y="50" width="160" height="32" rx="16" fill="#E6EEF8" />
+  <text x="70" y="71" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#1F4E8C" letter-spacing="0.5">CORE MODULE 01</text>
+
+  <!-- Title & Subtitle -->
+  <text x="50" y="125" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="800" fill="#1B2433">Workflow Engine</text>
+  <text x="50" y="155" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="500" fill="#5A6678">Configurable Application Routing &amp; Stage Control</text>
+
+  <!-- Workflow Diagram Canvas -->
+  <g transform="translate(50, 180)">
+    <!-- Stage 1: Draft -->
+    <g transform="translate(0, 0)" filter="url(#shadow)">
+      <rect width="500" height="64" rx="12" fill="#FFFFFF" stroke="#DDE3EC" stroke-width="1.5" />
+      <circle cx="36" cy="32" r="16" fill="#E6EEF8" />
+      <text x="36" y="37" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#1F4E8C" text-anchor="middle">1</text>
+      <text x="70" y="28" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#1B2433">Institutional Drafting &amp; Upload</text>
+      <text x="70" y="46" font-family="Inter, sans-serif" font-size="12" fill="#5A6678">Application preparation, document attachment</text>
+      <rect x="400" y="20" width="80" height="24" rx="12" fill="#E5F4EA" />
+      <text x="440" y="36" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1E6B3A" text-anchor="middle">Initiated</text>
+    </g>
+
+    <!-- Connector -->
+    <line x1="36" y1="64" x2="36" y2="88" stroke="#2B6CD4" stroke-width="3" stroke-dasharray="4 4" />
+
+    <!-- Stage 2: Scrutiny -->
+    <g transform="translate(0, 88)" filter="url(#shadow)">
+      <rect width="500" height="64" rx="12" fill="#FFFFFF" stroke="#2B6CD4" stroke-width="2" />
+      <circle cx="36" cy="32" r="16" fill="#1F4E8C" />
+      <text x="36" y="37" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
+      <text x="70" y="28" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#1B2433">Document Scrutiny</text>
+      <text x="70" y="46" font-family="Inter, sans-serif" font-size="12" fill="#5A6678">Scrutiny Officer verification with return reasons</text>
+      <rect x="385" y="20" width="95" height="24" rx="12" fill="#FFF3D6" />
+      <text x="432" y="36" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#8A5A00" text-anchor="middle">In Progress</text>
+    </g>
+
+    <!-- Connector -->
+    <line x1="36" y1="152" x2="36" y2="176" stroke="#2B6CD4" stroke-width="3" stroke-dasharray="4 4" />
+
+    <!-- Stage 3: EVC -->
+    <g transform="translate(0, 176)" filter="url(#shadow)">
+      <rect width="500" height="64" rx="12" fill="#FFFFFF" stroke="#DDE3EC" stroke-width="1.5" />
+      <circle cx="36" cy="32" r="16" fill="#EEF2F7" />
+      <text x="36" y="37" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#5A6678" text-anchor="middle">3</text>
+      <text x="70" y="28" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#1B2433">Expert Visit Committee (EVC)</text>
+      <text x="70" y="46" font-family="Inter, sans-serif" font-size="12" fill="#5A6678">On-site or virtual physical infrastructure audit</text>
+      <rect x="400" y="20" width="80" height="24" rx="12" fill="#EDEFF3" />
+      <text x="440" y="36" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#4B5565" text-anchor="middle">Pending</text>
+    </g>
+
+    <!-- Connector -->
+    <line x1="36" y1="240" x2="36" y2="264" stroke="#DDE3EC" stroke-width="3" stroke-dasharray="4 4" />
+
+    <!-- Stage 4: Statutory Approval -->
+    <g transform="translate(0, 264)" filter="url(#shadow)">
+      <rect width="500" height="64" rx="12" fill="#FFFFFF" stroke="#DDE3EC" stroke-width="1.5" />
+      <circle cx="36" cy="32" r="16" fill="#EEF2F7" />
+      <text x="36" y="37" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#5A6678" text-anchor="middle">4</text>
+      <text x="70" y="28" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#1B2433">Authorized Council Decision</text>
+      <text x="70" y="46" font-family="Inter, sans-serif" font-size="12" fill="#5A6678">Dual-signoff approval, denial, or compliance hold</text>
+      <rect x="390" y="20" width="90" height="24" rx="12" fill="#EDEFF3" />
+      <text x="435" y="36" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#4B5565" text-anchor="middle">Final Stage</text>
+    </g>
+  </g>
+
+  <!-- Bottom Metric Bar -->
+  <g transform="translate(50, 520)">
+    <rect width="500" height="40" rx="8" fill="#1F4E8C" />
+    <text x="250" y="25" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">Pinned Route Versions &bull; Immutable Stage History &bull; Role Scoped</text>
+  </g>
+</svg>

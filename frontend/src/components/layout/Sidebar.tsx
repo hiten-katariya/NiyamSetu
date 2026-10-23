@@ -28,7 +28,7 @@ interface NavItemConfig {
 }
 
 const navItems: NavItemConfig[] = [
-  { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+  { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
   {
     name: 'Applications',
     path: '/applications',

@@ -16,10 +16,10 @@ export const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // If already authenticated, redirect to destination or home
+  // If already authenticated, redirect to destination or dashboard
   useEffect(() => {
     if (isAuthenticated) {
-      const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/';
+      const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/dashboard';
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, navigate, location]);
@@ -36,7 +36,7 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
     try {
       await login(email, password);
-      const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/';
+      const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/dashboard';
       navigate(from, { replace: true });
     } catch (err) {
       if (err instanceof ApiClientError) {

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <defs>
+    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#F4F8FA" />
+    </linearGradient>
+    <filter id="shadow2" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0D9488" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#bgGrad2)" />
+  <rect x="20" y="20" width="560" height="560" rx="24" fill="none" stroke="#DDE3EC" stroke-width="2" />
+
+  <!-- Badge -->
+  <rect x="50" y="50" width="160" height="32" rx="16" fill="#CCFBF1" />
+  <text x="70" y="71" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#0F766E" letter-spacing="0.5">CORE MODULE 02</text>
+
+  <!-- Title & Subtitle -->
+  <text x="50" y="125" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#1B2433">Deadline Intelligence</text>
+  <text x="50" y="155" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#5A6678">Working-Day Calendar Engine, Reminders &amp; Escalations</text>
+
+  <!-- Content Box -->
+  <g transform="translate(50, 180)">
+    <!-- SLA Indicator Card -->
+    <g transform="translate(0, 0)" filter="url(#shadow2)">
+      <rect width="500" height="130" rx="16" fill="#FFFFFF" stroke="#DDE3EC" stroke-width="1.5" />
+      <circle cx="65" cy="65" r="40" fill="#F0FDFA" stroke="#0D9488" stroke-width="4" stroke-dasharray="180 60" />
+      <text x="65" y="71" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#0F766E" text-anchor="middle">75%</text>
+      
+      <text x="130" y="45" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#1B2433">Stage SLA: Document Scrutiny</text>
+      <text x="130" y="68" font-family="Inter, sans-serif" font-size="13" fill="#5A6678">Target: 7 Working Days (Excluding Weekends &amp; Holidays)</text>
+      <text x="130" y="95" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#0F766E">2 Calendar Days Remaining &bull; Due 28 Oct 2026</text>
+    </g>
+
+    <!-- Reminders & Escalations Grid -->
+    <g transform="translate(0, 150)">
+      <rect x="0" y="0" width="235" height="150" rx="12" fill="#FFFFFF" stroke="#DDE3EC" stroke-width="1.5" filter="url(#shadow2)" />
+      <circle cx="36" cy="36" r="16" fill="#FFF3D6" />
+      <path d="M36 26v12M36 42h.01" stroke="#8A5A00" stroke-width="2.5" stroke-linecap="round" />
+      <text x="64" y="40" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#1B2433">Reminder Offset</text>
+      <text x="24" y="80" font-family="Inter, sans-serif" font-size="12" fill="#5A6678">Automated notification triggered 3 days and 1 day prior to due date.</text>
+      <rect x="24" y="108" width="110" height="24" rx="6" fill="#FFF3D6" />
+      <text x="79" y="124" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#8A5A00" text-anchor="middle">T-3, T-1 Alerted</text>
+    </g>
+
+    <g transform="translate(265, 150)">
+      <rect x="0" y="0" width="235" height="150" rx="12" fill="#FFFFFF" stroke="#DDE3EC" stroke-width="1.5" filter="url(#shadow2)" />
+      <circle cx="36" cy="36" r="16" fill="#FDE8E6" />
+      <path d="M30 42l6-12 6 12" stroke="#B42318" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <text x="64" y="40" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#1B2433">Escalation Tier</text>
+      <text x="24" y="80" font-family="Inter, sans-serif" font-size="12" fill="#5A6678">Auto-escalates to Regional Director upon overdue status with audit log.</text>
+      <rect x="24" y="108" width="130" height="24" rx="6" fill="#FDE8E6" />
+      <text x="89" y="124" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#B42318" text-anchor="middle">Level 2: Regional RO</text>
+    </g>
+  </g>
+
+  <!-- Bottom Bar -->
+  <g transform="translate(50, 520)">
+    <rect width="500" height="40" rx="8" fill="#0D9488" />
+    <text x="250" y="25" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">Idempotent APScheduler &bull; Regulatory Hold Pauses &bull; Zero Missed SLAs</text>
+  </g>
+</svg>

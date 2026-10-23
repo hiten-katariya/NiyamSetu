@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <defs>
+    <linearGradient id="bgGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FBF7FF" />
+    </linearGradient>
+    <filter id="shadow3" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#7C3AED" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#bgGrad3)" />
+  <rect x="20" y="20" width="560" height="560" rx="24" fill="none" stroke="#DDE3EC" stroke-width="2" />
+
+  <!-- Badge -->
+  <rect x="50" y="50" width="160" height="32" rx="16" fill="#F3E8FF" />
+  <text x="70" y="71" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#6D28D9" letter-spacing="0.5">CORE MODULE 03</text>
+
+  <!-- Title & Subtitle -->
+  <text x="50" y="125" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#1B2433">EVC Management</text>
+  <text x="50" y="155" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#5A6678">Expert Visit Committee Scheduling &amp; Inspection Reports</text>
+
+  <!-- Content Box -->
+  <g transform="translate(50, 180)">
+    <!-- Main EVC Card -->
+    <g transform="translate(0, 0)" filter="url(#shadow3)">
+      <rect width="500" height="150" rx="16" fill="#FFFFFF" stroke="#DDE3EC" stroke-width="1.5" />
+      <rect x="24" y="24" width="452" height="34" rx="8" fill="#F8FAFC" />
+      <text x="40" y="46" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#1B2433">EVC #2026-EVC-0881 &bull; Physical Visit Mode</text>
+      <rect x="360" y="29" width="105" height="24" rx="12" fill="#E5F4EA" />
+      <text x="412" y="45" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1E6B3A" text-anchor="middle">Conducted</text>
+
+      <text x="24" y="86" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#5A6678">Committee Composition:</text>
+      <!-- Member 1 -->
+      <circle cx="36" cy="115" r="14" fill="#E6EEF8" />
+      <text x="36" y="120" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1F4E8C" text-anchor="middle">AK</text>
+      <text x="60" y="114" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#1B2433">Prof. A. Kumar</text>
+      <text x="60" y="128" font-family="Inter, sans-serif" font-size="11" fill="#5A6678">Chairman (IIT Delhi)</text>
+
+      <!-- Member 2 -->
+      <circle cx="210" cy="115" r="14" fill="#CCFBF1" />
+      <text x="210" y="120" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#0F766E" text-anchor="middle">SR</text>
+      <text x="234" y="114" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#1B2433">Dr. S. Roy</text>
+      <text x="234" y="128" font-family="Inter, sans-serif" font-size="11" fill="#5A6678">Member (NIT Trichy)</text>
+    </g>
+
+    <!-- Inspection Report Status -->
+    <g transform="translate(0, 170)" filter="url(#shadow3)">
+      <rect width="500" height="130" rx="14" fill="#FFFFFF" stroke="#DDE3EC" stroke-width="1.5" />
+      <text x="24" y="36" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#1B2433">Inspection Verification Checklist</text>
+      
+      <!-- Checklist items -->
+      <g transform="translate(24, 52)">
+        <circle cx="10" cy="10" r="8" fill="#E5F4EA" />
+        <path d="M6 10l3 3 5-6" stroke="#1E6B3A" stroke-width="2" fill="none" stroke-linecap="round" />
+        <text x="26" y="14" font-family="Inter, sans-serif" font-size="12" fill="#1B2433">Classrooms &amp; Laboratories: 100% compliant</text>
+      </g>
+      <g transform="translate(24, 82)">
+        <circle cx="10" cy="10" r="8" fill="#FFF3D6" />
+        <path d="M10 6v5M10 14h.01" stroke="#8A5A00" stroke-width="2" fill="none" stroke-linecap="round" />
+        <text x="26" y="14" font-family="Inter, sans-serif" font-size="12" fill="#1B2433">Faculty Cadre Ratio: Recommended with conditional undertaking</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bottom Bar -->
+  <g transform="translate(50, 520)">
+    <rect width="500" height="40" rx="8" fill="#7C3AED" />
+    <text x="250" y="25" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">Conflict-of-Interest Scoping &bull; Report Encryption &bull; RO Signoff</text>
+  </g>
+</svg>

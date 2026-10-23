@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <defs>
+    <linearGradient id="bgGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#F3F9F5" />
+    </linearGradient>
+    <filter id="shadow4" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#1E6B3A" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#bgGrad4)" />
+  <rect x="20" y="20" width="560" height="560" rx="24" fill="none" stroke="#DDE3EC" stroke-width="2" />
+
+  <!-- Badge -->
+  <rect x="50" y="50" width="160" height="32" rx="16" fill="#DCFCE7" />
+  <text x="70" y="71" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#15803D" letter-spacing="0.5">CORE MODULE 04</text>
+
+  <!-- Title & Subtitle -->
+  <text x="50" y="125" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#1B2433">Undertakings Tracking</text>
+  <text x="50" y="155" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#5A6678">Time-Bound Compliance Obligations &amp; Dual-Control Evidence</text>
+
+  <!-- Content Box -->
+  <g transform="translate(50, 180)">
+    <!-- Undertaking Card 1 -->
+    <g transform="translate(0, 0)" filter="url(#shadow4)">
+      <rect width="500" height="140" rx="16" fill="#FFFFFF" stroke="#DDE3EC" stroke-width="1.5" />
+      <rect x="24" y="20" width="300" height="24" rx="4" fill="#F8FAFC" />
+      <text x="32" y="36" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#1B2433">UND-2026-0042 &bull; Faculty Cadre Rectification</text>
+      <rect x="375" y="20" width="100" height="24" rx="12" fill="#E5F4EA" />
+      <text x="425" y="36" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1E6B3A" text-anchor="middle">Fulfilled &amp; Signed</text>
+
+      <text x="24" y="72" font-family="Inter, sans-serif" font-size="13" fill="#5A6678">Condition: Appoint 2 Professors in Computer Science within 90 days.</text>
+      
+      <!-- Evidence block -->
+      <g transform="translate(24, 90)">
+        <rect width="452" height="34" rx="6" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1" />
+        <text x="16" y="22" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#166534">Evidence: joining_orders_gazette.pdf (Verified by Regional Officer)</text>
+      </g>
+    </g>
+
+    <!-- Undertaking Card 2 -->
+    <g transform="translate(0, 160)" filter="url(#shadow4)">
+      <rect width="500" height="140" rx="16" fill="#FFFFFF" stroke="#2B6CD4" stroke-width="2" />
+      <rect x="24" y="20" width="300" height="24" rx="4" fill="#F8FAFC" />
+      <text x="32" y="36" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#1B2433">UND-2026-0045 &bull; Fire Safety NOC Renewal</text>
+      <rect x="360" y="20" width="115" height="24" rx="12" fill="#FFF3D6" />
+      <text x="417" y="36" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#8A5A00" text-anchor="middle">Under Verification</text>
+
+      <text x="24" y="72" font-family="Inter, sans-serif" font-size="13" fill="#5A6678">Condition: Submission of State Fire Service Clearance Certificate.</text>
+      
+      <!-- Evidence block -->
+      <g transform="translate(24, 90)">
+        <rect width="452" height="34" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1" />
+        <text x="16" y="22" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#1E40AF">Evidence uploaded 2 hours ago &bull; Pending Officer Review</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bottom Bar -->
+  <g transform="translate(50, 520)">
+    <rect width="500" height="40" rx="8" fill="#1E6B3A" />
+    <text x="250" y="25" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">Dual-Control Approval &bull; Due Date Automations &bull; Evidence Vault</text>
+  </g>
+</svg>

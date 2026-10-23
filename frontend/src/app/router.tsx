@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '../components/layout/AppShell';
 import { ProtectedRoute } from '../components/ProtectedRoute';
+import { LandingPage } from '../features/landing/LandingPage';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
 import { ApplicationsListPage } from '../features/applications/ApplicationsListPage';
 import { ApplicationDetailPage } from '../features/applications/ApplicationDetailPage';
@@ -15,6 +16,10 @@ import { AccessDeniedPage } from '../features/auth/AccessDeniedPage';
 
 export const router = createBrowserRouter([
   {
+    path: '/',
+    element: <LandingPage />,
+  },
+  {
     path: '/login',
     element: <LoginPage />,
   },
@@ -23,7 +28,6 @@ export const router = createBrowserRouter([
     element: <AccessDeniedPage />,
   },
   {
-    path: '/',
     element: (
       <ProtectedRoute>
         <AppShell />
@@ -31,11 +35,15 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
-        index: true,
+        path: '/dashboard',
         element: <DashboardPage />,
       },
       {
-        path: 'applications',
+        path: '/app',
+        element: <DashboardPage />,
+      },
+      {
+        path: '/applications',
         element: (
           <ProtectedRoute
             allowedRoles={[

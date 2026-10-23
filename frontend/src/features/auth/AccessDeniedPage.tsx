@@ -34,7 +34,7 @@ export const AccessDeniedPage: React.FC = () => {
           <ArrowLeft className="w-4 h-4" />
           <span>Go Back</span>
         </Button>
-        <Button variant="primary" onClick={() => navigate('/')} className="gap-1.5">
+        <Button variant="primary" onClick={() => navigate('/dashboard')} className="gap-1.5">
           <Home className="w-4 h-4" />
           <span>Return to Dashboard</span>
         </Button>
