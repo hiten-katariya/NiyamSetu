@@ -5,6 +5,7 @@ import { ReadinessCheckData } from '../../../types';
 
 export const Footer: React.FC = () => {
   const [readiness, setReadiness] = useState<ReadinessCheckData | null>(null);
+  const [logoError, setLogoError] = useState(false);
 
   useEffect(() => {
     api
@@ -21,15 +22,16 @@ export const Footer: React.FC = () => {
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-white border border-niyam-border flex items-center justify-center shadow-xs overflow-hidden p-0.5">
-                <img
-                  src="/small-logo.png"
-                  alt="NiyamSetu Logo"
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLElement).style.display = 'none';
-                    e.currentTarget.parentElement!.innerText = 'NS';
-                  }}
-                />
+                {!logoError ? (
+                  <img
+                    src="/small-logo.png"
+                    alt="NiyamSetu Logo"
+                    className="w-full h-full object-contain"
+                    onError={() => setLogoError(true)}
+                  />
+                ) : (
+                  <span className="text-niyam-primary font-black text-xs">NS</span>
+                )}
               </div>
               <span className="text-xl font-extrabold text-niyam-primary tracking-tight">
                 NiyamSetu

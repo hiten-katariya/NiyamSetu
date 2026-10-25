@@ -6,6 +6,7 @@ import { useAuth } from '../../../app/AuthContext';
 export const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -53,16 +54,16 @@ export const Navbar: React.FC = () => {
           aria-label="NiyamSetu Home"
         >
           <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-xs overflow-hidden border border-niyam-border p-0.5 transition-transform group-hover:scale-105">
-            <img
-              src="/small-logo.png"
-              alt="NiyamSetu Logo"
-              className="w-full h-full object-contain"
-              onError={(e) => {
-                // Fallback to text initials if image fails to load
-                (e.currentTarget as HTMLElement).style.display = 'none';
-                e.currentTarget.parentElement!.innerHTML = '<span class="text-niyam-primary font-black text-sm">NS</span>';
-              }}
-            />
+            {!logoError ? (
+              <img
+                src="/small-logo.png"
+                alt="NiyamSetu Logo"
+                className="w-full h-full object-contain"
+                onError={() => setLogoError(true)}
+              />
+            ) : (
+              <span className="text-niyam-primary font-black text-sm">NS</span>
+            )}
           </div>
           <div className="flex flex-col">
             <span className="text-lg font-extrabold text-niyam-primary tracking-tight leading-none group-hover:text-niyam-focus transition-colors">

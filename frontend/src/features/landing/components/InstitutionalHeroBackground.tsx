@@ -28,6 +28,10 @@ const INSTITUTION_TAGS = [
   'Audit Ledger',
   'SLA Clock',
   'Doc Vault',
+  'AICTE Desk',
+  'Verification Node',
+  'Status Tracker',
+  'Tamper Proof',
 ];
 
 export const InstitutionalHeroBackground: React.FC = () => {
@@ -67,24 +71,25 @@ export const InstitutionalHeroBackground: React.FC = () => {
     const ro = new ResizeObserver(handleResize);
     if (containerRef.current) ro.observe(containerRef.current);
 
-    // Initialize network nodes
-    const nodeCount = Math.max(16, Math.min(32, Math.floor(window.innerWidth / 55)));
+    // Initialize network nodes (rich regulatory telemetry mesh)
+    const nodeCount = Math.max(36, Math.min(60, Math.floor(window.innerWidth / 30)));
     const nodes: Node[] = [];
 
     const palette = [
-      'rgba(2, 132, 199, 0.75)',   // Niyam primary cyan/blue
-      'rgba(99, 102, 241, 0.7)',   // Indigo scrutiny
-      'rgba(14, 165, 233, 0.65)',  // Sky blue
-      'rgba(16, 185, 129, 0.7)',   // Emerald verification
+      'rgba(2, 132, 199, 0.85)',   // Niyam primary cyan/blue
+      'rgba(99, 102, 241, 0.85)',   // Indigo scrutiny
+      'rgba(14, 165, 233, 0.8)',   // Sky blue
+      'rgba(168, 85, 247, 0.8)',   // Purple statutory
+      'rgba(16, 185, 129, 0.8)',   // Emerald verification
     ];
 
     for (let i = 0; i < nodeCount; i++) {
       nodes.push({
         x: Math.random() * (width || window.innerWidth),
-        y: Math.random() * (height || 700),
-        vx: (Math.random() - 0.5) * 0.45,
-        vy: (Math.random() - 0.5) * 0.45,
-        radius: 2 + Math.random() * 2.2,
+        y: Math.random() * (height || 800),
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        radius: 2.2 + Math.random() * 2.4,
         label: i < INSTITUTION_TAGS.length ? INSTITUTION_TAGS[i] : undefined,
         color: palette[i % palette.length],
         pulsePhase: Math.random() * Math.PI * 2,
@@ -109,7 +114,7 @@ export const InstitutionalHeroBackground: React.FC = () => {
     window.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseleave', handleMouseLeave);
 
-    const maxDistance = 140;
+    const maxDistance = 175;
 
     const render = (time: number) => {
       if (!ctx || width === 0 || height === 0) {
@@ -120,7 +125,7 @@ export const InstitutionalHeroBackground: React.FC = () => {
       ctx.clearRect(0, 0, width, height);
 
       // Periodically trigger a data packet pulse across connected nodes
-      if (time - lastPulseTime > 1200 && pulses.length < 8) {
+      if (time - lastPulseTime > 750 && pulses.length < 14) {
         const fromIdx = Math.floor(Math.random() * nodes.length);
         // Find a nearby node
         let closestIdx = -1;
@@ -140,7 +145,7 @@ export const InstitutionalHeroBackground: React.FC = () => {
             fromNode: fromIdx,
             toNode: closestIdx,
             progress: 0,
-            speed: 0.015 + Math.random() * 0.015,
+            speed: 0.018 + Math.random() * 0.02,
           });
           lastPulseTime = time;
         }
@@ -154,12 +159,12 @@ export const InstitutionalHeroBackground: React.FC = () => {
           const dist = Math.hypot(dx, dy);
 
           if (dist < maxDistance) {
-            const alpha = (1 - dist / maxDistance) * 0.28;
+            const alpha = (1 - dist / maxDistance) * 0.42;
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(14, 165, 233, ${alpha})`;
-            ctx.lineWidth = 1;
+            ctx.strokeStyle = `rgba(99, 102, 241, ${alpha})`;
+            ctx.lineWidth = 1.2;
             ctx.stroke();
           }
         }
@@ -232,13 +237,13 @@ export const InstitutionalHeroBackground: React.FC = () => {
           ctx.stroke();
         }
 
-        n.pulsePhase += 0.035;
-        const currentR = n.radius + Math.sin(n.pulsePhase) * 0.4;
+        n.pulsePhase += 0.04;
+        const currentR = n.radius + Math.sin(n.pulsePhase) * 0.5;
 
         // Outer glow circle
         ctx.beginPath();
-        ctx.arc(n.x, n.y, currentR + 2, 0, Math.PI * 2);
-        ctx.fillStyle = n.color.replace(/[\d.]+\)$/, '0.12)');
+        ctx.arc(n.x, n.y, currentR + 3, 0, Math.PI * 2);
+        ctx.fillStyle = n.color.replace(/[\d.]+\)$/, '0.18)');
         ctx.fill();
 
         // Node center
@@ -247,11 +252,25 @@ export const InstitutionalHeroBackground: React.FC = () => {
         ctx.fillStyle = n.color;
         ctx.fill();
 
-        // Node label (if statutory landmark node)
+        // Node label (institutional landmark badge)
         if (n.label) {
-          ctx.font = '500 10px system-ui, -apple-system, sans-serif';
-          ctx.fillStyle = 'rgba(71, 85, 105, 0.7)';
-          ctx.fillText(n.label, n.x + 7, n.y + 3);
+          ctx.save();
+          ctx.font = '600 10px system-ui, -apple-system, sans-serif';
+          const textW = ctx.measureText(n.label).width;
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          ctx.strokeStyle = 'rgba(203, 213, 225, 0.8)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(n.x + 8, n.y - 8, textW + 10, 16, 4);
+          } else {
+            ctx.rect(n.x + 8, n.y - 8, textW + 10, 16);
+          }
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#1e293b';
+          ctx.fillText(n.label, n.x + 13, n.y + 4);
+          ctx.restore();
         }
       }
 
@@ -274,19 +293,22 @@ export const InstitutionalHeroBackground: React.FC = () => {
       className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none z-0 bg-transparent"
       aria-hidden="true"
     >
-      {/* LAYER 1: WebGPU AeroShards in Light Mode (Depth & Reflections) */}
-      <div className="absolute inset-0 w-full h-full opacity-85 transition-opacity duration-700">
+      {/* LAYER 1: Subtle ambient neural tint behind the animation */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,rgba(99,102,241,0.06),rgba(2,132,199,0.04)_50%,transparent_75%)] pointer-events-none" />
+
+      {/* LAYER 2: WebGPU AeroShards (Depth, Reflections, holdToGather physics) */}
+      <div className="absolute inset-0 w-full h-full opacity-90 transition-opacity duration-700">
         <AeroShards
-          shardColor="#0284c7"
-          accentColor="#6366f1"
+          shardColor="#896ABD"
+          accentColor="#A855F7"
           backgroundColor="transparent"
           lightMode={true}
           placement="full"
           material="glass"
           markers="plus"
-          count={850}
-          depthOfField={0.7}
-          vignette={0.15}
+          count={1300}
+          depthOfField={0.75}
+          vignette={0.2}
           mouseInteraction={true}
           pulseOnClick={true}
           holdToGather={true}
@@ -294,7 +316,7 @@ export const InstitutionalHeroBackground: React.FC = () => {
         />
       </div>
 
-      {/* LAYER 2: Connected Compliance & Workflow Network Canvas */}
+      {/* LAYER 3: Connected Compliance & Workflow Network Canvas */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"
