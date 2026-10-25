@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../../app/AuthContext';
 import { InteractiveHeadline } from './InteractiveHeadline';
+import { SwarmCursor } from '../../../components/SwarmCursor';
 
 export const Hero: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -26,7 +27,20 @@ export const Hero: React.FC = () => {
       </div>
 
       <div className="liquid-container relative z-10">
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+        <SwarmCursor
+          count={500}
+          size={2.5}
+          spread={80}
+          swirl={0.65}
+          speed={0.8}
+          wander={0.4}
+          clickEffect="burst"
+          lightMode={true}
+          accentColor="#0284c7"
+          color="#94a3b8"
+          className="!overflow-visible"
+        >
+          <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
           {/* Top Pill / Platform Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-niyam-border/80 backdrop-blur-sm shadow-xs mb-8 transition-transform hover:scale-105">
             <span className="flex h-2 w-2 rounded-full bg-niyam-focus animate-pulse" />
@@ -106,6 +120,7 @@ export const Hero: React.FC = () => {
             </div>
           </div>
         </div>
+        </SwarmCursor>
 
         {/* Hero Interactive Interface Mockup / Preview Card */}
         <div className="max-w-5xl mx-auto rounded-2xl bg-white/95 border border-niyam-border shadow-2xl p-4 sm:p-7 backdrop-blur-xl relative transition-all duration-300 hover:shadow-niyam-primary/10">
