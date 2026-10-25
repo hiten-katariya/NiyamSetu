@@ -890,6 +890,17 @@ export const CircularCarousel: React.FC<CircularCarouselProps> = ({
         : { left: -offset, top: 0, width: cardW, height: cardH };
     const flip = axis === 'x' ? ' rotateX(180deg)' : ' rotateY(180deg)';
     const gone = leaving?.items[index];
+    const frameBorder = {
+      borderTop: '1px solid #CBD5E1',
+      borderBottom: '1px solid #CBD5E1',
+      borderLeft: first ? '1px solid #CBD5E1' : 'none',
+      borderRight: last ? '1px solid #CBD5E1' : 'none',
+      boxShadow: first
+        ? '-4px 10px 24px -4px rgba(31, 78, 140, 0.12)'
+        : last
+        ? '4px 10px 24px -4px rgba(31, 78, 140, 0.12)'
+        : '0 10px 24px -6px rgba(31, 78, 140, 0.08)',
+    };
     return (
       <div
         key={`${back ? 'b' : 'f'}${tile.index}`}
@@ -899,7 +910,7 @@ export const CircularCarousel: React.FC<CircularCarouselProps> = ({
       >
         <div
           className="circular-carousel__frame"
-          style={{ height: axis === 'x' ? size : cardH, borderRadius: frameRadius }}
+          style={{ height: axis === 'x' ? size : cardH, borderRadius: frameRadius, ...frameBorder }}
         >
           {/* Card Surface Fallback: renders seamless title, badge, and diagram so the card is never blank */}
           <div
@@ -912,7 +923,7 @@ export const CircularCarousel: React.FC<CircularCarouselProps> = ({
               justifyContent: 'space-between',
               padding: '20px 18px',
               background: 'linear-gradient(150deg, #FFFFFF 0%, #F8FAFC 50%, #EDF2F7 100%)',
-              border: '1.5px solid #CBD5E1',
+              border: 'none',
               borderRadius: '16px',
               boxSizing: 'border-box',
               pointerEvents: 'none',

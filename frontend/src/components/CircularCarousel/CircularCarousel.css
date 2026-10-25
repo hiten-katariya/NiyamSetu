@@ -79,7 +79,7 @@
 
 .circular-carousel__tile {
   position: absolute;
-  outline: 1px solid transparent;
+  outline: none;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
@@ -88,11 +88,11 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 100%;
+  width: calc(100% + 1px);
   overflow: hidden;
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid rgba(203, 213, 225, 0.95);
-  box-shadow: 0 12px 28px -6px rgba(31, 78, 140, 0.16), 0 8px 12px -4px rgba(31, 78, 140, 0.08);
+  border: none;
+  box-shadow: none;
 }
 
 .circular-carousel__photo {
