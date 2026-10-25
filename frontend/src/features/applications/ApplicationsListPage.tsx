@@ -17,7 +17,7 @@ import { Badge } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { api, ApiClientError } from '../../lib/apiClient';
-import { ApplicationItem, PaginatedResponse, RouteType } from '../../types';
+import { ApplicationItem, RouteType } from '../../types';
 import { useAuth } from '../../app/AuthContext';
 
 export const ApplicationsListPage: React.FC = () => {
@@ -57,11 +57,15 @@ export const ApplicationsListPage: React.FC = () => {
         params.set('search', searchQuery.trim());
       }
 
-      const res = await api.get<PaginatedResponse<ApplicationItem>>(`/applications?${params.toString()}`);
-      setApplications(res.data);
-      setTotal(res.meta.total);
-      setTotalPages(res.meta.total_pages);
+      const res = await api.getPaginated<ApplicationItem>(`/applications?${params.toString()}`);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      setApplications(items);
+      setTotal(res?.meta?.total ?? items.length);
+      setTotalPages(res?.meta?.total_pages ?? 1);
     } catch (err) {
+      setApplications([]);
+      setTotal(0);
+      setTotalPages(1);
       if (err instanceof ApiClientError) {
         setError(err.message);
       } else {
@@ -79,12 +83,13 @@ export const ApplicationsListPage: React.FC = () => {
   const loadRoutes = async () => {
     try {
       const res = await api.get<RouteType[]>('/workflow/routes');
-      setRoutes(res);
-      if (res.length > 0) {
-        setSelectedRouteId(res[0].id);
+      const safe = Array.isArray(res) ? res : [];
+      setRoutes(safe);
+      if (safe.length > 0) {
+        setSelectedRouteId(safe[0].id);
       }
     } catch {
-      // Best effort
+      setRoutes([]);
     }
   };
 
@@ -225,146 +230,151 @@ export const ApplicationsListPage: React.FC = () => {
       )}
 
       {/* Applications Table Card */}
-      <Card
-        title="Application Records"
-        subtitle={`Showing ${applications.length} of ${total} records under current institutional and regional scope`}
-      >
-        {isLoading && applications.length === 0 ? (
-          <div className="text-center py-12 text-xs text-niyam-text-muted flex flex-col items-center gap-2">
-            <div className="w-6 h-6 border-2 border-niyam-primary border-t-transparent rounded-full animate-spin" />
-            <span>Loading applications from server...</span>
-          </div>
-        ) : applications.length === 0 ? (
-          <div className="text-center py-12 text-xs text-niyam-text-muted">
-            <FileSpreadsheet className="w-10 h-10 mx-auto text-niyam-text-muted/50 mb-2" />
-            <p className="font-semibold text-niyam-text">No applications found</p>
-            <p className="mt-1">
-              {statusFilter !== 'all' || searchQuery
-                ? 'Try adjusting your search criteria or filter status.'
-                : 'No approval applications have been submitted under this jurisdiction.'}
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-niyam-surface-alt border-y border-niyam-border text-niyam-text-muted font-semibold">
-                <tr>
-                  <th className="py-2.5 px-3">Reference No.</th>
-                  <th className="py-2.5 px-3">Institution</th>
-                  <th className="py-2.5 px-3">Workflow Route</th>
-                  <th className="py-2.5 px-3">Current Stage</th>
-                  <th className="py-2.5 px-3">Status</th>
-                  <th className="py-2.5 px-3">Assigned Desk</th>
-                  <th className="py-2.5 px-3">Submitted</th>
-                  <th className="py-2.5 px-3 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-niyam-border">
-                {applications.map((app) => (
-                  <tr
-                    key={app.id}
-                    onClick={() => navigate(`/applications/${app.id}`)}
-                    className="hover:bg-niyam-surface-alt/60 cursor-pointer transition-colors"
-                  >
-                    <td className="py-3 px-3">
-                      <span className="font-semibold font-mono text-niyam-primary hover:underline">
-                        {app.reference_no}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3">
-                      <p className="font-medium text-niyam-text">{app.institution_name || 'Assigned Institution'}</p>
-                      {app.institution_code && (
-                        <p className="text-[11px] text-niyam-text-muted font-mono">{app.institution_code}</p>
-                      )}
-                    </td>
-                    <td className="py-3 px-3 text-niyam-text-muted">
-                      <p className="text-niyam-text font-medium">{app.route_name || 'Standard Route'}</p>
-                      <p className="text-[11px]">Pinned v{app.route_version}</p>
-                    </td>
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-1.5">
-                        <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px]">
-                          {app.current_stage_sequence || 1}/{app.total_stages || 1}
-                        </span>
-                        <span className="font-medium text-niyam-text">
-                          {app.current_stage_name || 'Under Review'}
-                        </span>
-                      </div>
-                      {app.current_stage_role && (
-                        <p className="text-[10px] text-niyam-text-muted mt-0.5">
-                          Role: {app.current_stage_role.replace(/_/g, ' ')}
-                        </p>
-                      )}
-                    </td>
-                    <td className="py-3 px-3">{getStatusBadge(app.status)}</td>
-                    <td className="py-3 px-3 text-niyam-text-muted">
-                      {app.assigned_to_name ? (
-                        <span className="font-medium text-niyam-text">{app.assigned_to_name}</span>
-                      ) : (
-                        <span className="italic text-niyam-text-muted/70">Unassigned Pool</span>
-                      )}
-                    </td>
-                    <td className="py-3 px-3 text-niyam-text-muted whitespace-nowrap">
-                      {app.submitted_at
-                        ? new Date(app.submitted_at).toLocaleDateString(undefined, {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })
-                        : '—'}
-                    </td>
-                    <td className="py-3 px-3 text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/applications/${app.id}`);
-                        }}
-                        className="text-xs gap-1"
+      {(() => {
+        const safeApps = Array.isArray(applications) ? applications : [];
+        return (
+          <Card
+            title="Application Records"
+            subtitle={`Showing ${safeApps.length} of ${total ?? 0} records under current institutional and regional scope`}
+          >
+            {isLoading && safeApps.length === 0 ? (
+              <div className="text-center py-12 text-xs text-niyam-text-muted flex flex-col items-center gap-2">
+                <div className="w-6 h-6 border-2 border-niyam-primary border-t-transparent rounded-full animate-spin" />
+                <span>Loading applications from server...</span>
+              </div>
+            ) : safeApps.length === 0 ? (
+              <div className="text-center py-12 text-xs text-niyam-text-muted">
+                <FileSpreadsheet className="w-10 h-10 mx-auto text-niyam-text-muted/50 mb-2" />
+                <p className="font-semibold text-niyam-text">No applications found</p>
+                <p className="mt-1">
+                  {statusFilter !== 'all' || searchQuery
+                    ? 'Try adjusting your search criteria or filter status.'
+                    : 'No approval applications have been submitted under this jurisdiction.'}
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-niyam-surface-alt border-y border-niyam-border text-niyam-text-muted font-semibold">
+                    <tr>
+                      <th className="py-2.5 px-3">Reference No.</th>
+                      <th className="py-2.5 px-3">Institution</th>
+                      <th className="py-2.5 px-3">Workflow Route</th>
+                      <th className="py-2.5 px-3">Current Stage</th>
+                      <th className="py-2.5 px-3">Status</th>
+                      <th className="py-2.5 px-3">Assigned Desk</th>
+                      <th className="py-2.5 px-3">Submitted</th>
+                      <th className="py-2.5 px-3 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-niyam-border">
+                    {safeApps.map((app) => (
+                      <tr
+                        key={app.id}
+                        onClick={() => navigate(`/applications/${app.id}`)}
+                        className="hover:bg-niyam-surface-alt/60 cursor-pointer transition-colors"
                       >
-                        <span>View</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                        <td className="py-3 px-3">
+                          <span className="font-semibold font-mono text-niyam-primary hover:underline">
+                            {app.reference_no}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3">
+                          <p className="font-medium text-niyam-text">{app.institution_name || 'Assigned Institution'}</p>
+                          {app.institution_code && (
+                            <p className="text-[11px] text-niyam-text-muted font-mono">{app.institution_code}</p>
+                          )}
+                        </td>
+                        <td className="py-3 px-3 text-niyam-text-muted">
+                          <p className="text-niyam-text font-medium">{app.route_name || 'Standard Route'}</p>
+                          <p className="text-[11px]">Pinned v{app.route_version}</p>
+                        </td>
+                        <td className="py-3 px-3">
+                          <div className="flex items-center gap-1.5">
+                            <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px]">
+                              {app.current_stage_sequence || 1}/{app.total_stages || 1}
+                            </span>
+                            <span className="font-medium text-niyam-text">
+                              {app.current_stage_name || 'Under Review'}
+                            </span>
+                          </div>
+                          {app.current_stage_role && (
+                            <p className="text-[10px] text-niyam-text-muted mt-0.5">
+                              Role: {app.current_stage_role.replace(/_/g, ' ')}
+                            </p>
+                          )}
+                        </td>
+                        <td className="py-3 px-3">{getStatusBadge(app.status)}</td>
+                        <td className="py-3 px-3 text-niyam-text-muted">
+                          {app.assigned_to_name ? (
+                            <span className="font-medium text-niyam-text">{app.assigned_to_name}</span>
+                          ) : (
+                            <span className="italic text-niyam-text-muted/70">Unassigned Pool</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-3 text-niyam-text-muted whitespace-nowrap">
+                          {app.submitted_at
+                            ? new Date(app.submitted_at).toLocaleDateString(undefined, {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })
+                            : '—'}
+                        </td>
+                        <td className="py-3 px-3 text-right">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/applications/${app.id}`);
+                            }}
+                            className="text-xs gap-1"
+                          >
+                            <span>View</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
-        {/* Pagination Bar */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-4 border-t border-niyam-border mt-4 text-xs text-niyam-text-muted">
-            <span>
-              Page {page} of {totalPages}
-            </span>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="gap-1"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-                <span>Previous</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="gap-1"
-              >
-                <span>Next</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Button>
-            </div>
-          </div>
-        )}
-      </Card>
+            {/* Pagination Bar */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between pt-4 border-t border-niyam-border mt-4 text-xs text-niyam-text-muted">
+                <span>
+                  Page {page} of {totalPages}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className="gap-1"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                    <span>Previous</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    className="gap-1"
+                  >
+                    <span>Next</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Card>
+        );
+      })()}
 
       {/* Create Application Modal */}
       {isCreateModalOpen && (
@@ -418,9 +428,9 @@ export const ApplicationsListPage: React.FC = () => {
                   className="w-full text-xs bg-niyam-surface border border-niyam-border rounded-md px-3 py-2 text-niyam-text focus:outline-none focus:ring-1 focus:ring-niyam-primary"
                   required
                 >
-                  {routes.map((r) => (
+                  {(Array.isArray(routes) ? routes : []).map((r) => (
                     <option key={r.id} value={r.id}>
-                      {r.name} (v{r.current_version}) — {r.stages.length} configured stages
+                      {r.name} (v{r.current_version}) — {r.stages?.length ?? 0} configured stages
                     </option>
                   ))}
                 </select>

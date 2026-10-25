@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
-from backend.app.core.exceptions import AppException, ForbiddenError, NotFoundError
+from backend.app.core.exceptions import AppException, BadRequestError, ForbiddenError, NotFoundError
 from backend.app.models.entities import (
     Application,
     Institution,
@@ -71,7 +71,7 @@ class UndertakingService:
     def create_undertaking(
         cls,
         db: Session,
-        application_id: uuid.UUID,
+        application_id: Optional[uuid.UUID],
         title: str,
         description: str,
         due_date: date,
@@ -86,9 +86,22 @@ class UndertakingService:
         if role_enum == UserRole.INSTITUTION_USER:
             raise ForbiddenError("Institution users cannot create undertakings.")
 
-        app = db.get(Application, application_id)
-        if not app:
-            raise NotFoundError("Application not found.")
+        if not application_id:
+            stmt = select(Application)
+            if assigned_institution_id:
+                stmt = stmt.where(Application.institution_id == assigned_institution_id)
+            elif role_enum == UserRole.REGIONAL_OFFICER and user.region_id:
+                stmt = stmt.join(Institution).where(Institution.region_id == user.region_id)
+            elif role_enum == UserRole.INSTITUTION_USER and user.institution_id:
+                stmt = stmt.where(Application.institution_id == user.institution_id)
+            app = db.scalars(stmt.order_by(Application.created_at.desc())).first()
+            if not app:
+                raise BadRequestError("An application must be selected to issue an undertaking.")
+            application_id = app.id
+        else:
+            app = db.get(Application, application_id)
+            if not app:
+                raise NotFoundError("Application not found.")
 
         target_inst_id = assigned_institution_id or app.institution_id
 

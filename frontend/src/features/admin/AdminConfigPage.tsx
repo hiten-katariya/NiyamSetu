@@ -28,6 +28,7 @@ import {
   Search,
   Sliders,
   Plus,
+  AlertCircle,
   Trash2,
   Edit,
 } from 'lucide-react';
@@ -88,6 +89,7 @@ export const AdminConfigPage: React.FC = () => {
   const [holidayName, setHolidayName] = useState('');
   const [holidayDate, setHolidayDate] = useState('');
   const [holidayChangeReason, setHolidayChangeReason] = useState('');
+  const [holidayModalError, setHolidayModalError] = useState<string | null>(null);
 
   // Tab 5: Message Templates
   const [templates, setTemplates] = useState<MessageTemplateItem[]>([]);
@@ -334,19 +336,34 @@ export const AdminConfigPage: React.FC = () => {
 
   const handleCreateHoliday = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!holidayName.trim() || holidayName.trim().length < 2) {
+      setHolidayModalError('Holiday Name must be at least 2 characters.');
+      return;
+    }
+    if (!holidayDate) {
+      setHolidayModalError('Holiday Date is required.');
+      return;
+    }
+    if (!holidayChangeReason.trim()) {
+      setHolidayModalError('Change Reason is required.');
+      return;
+    }
     setIsSubmitting(true);
+    setHolidayModalError(null);
     setErrorMessage(null);
     try {
       await api.post('/admin/holidays', {
-        name: holidayName,
+        name: holidayName.trim(),
         holiday_date: holidayDate,
-        change_reason: holidayChangeReason,
+        change_reason: holidayChangeReason.trim(),
       });
       setIsHolidayModalOpen(false);
       setStatusMessage('Holiday registered successfully.');
       await fetchHolidays();
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : 'Failed to create holiday');
+      const msg = err instanceof Error ? err.message : 'Failed to create holiday';
+      setHolidayModalError(msg);
+      setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -785,6 +802,7 @@ export const AdminConfigPage: React.FC = () => {
                 setHolidayName('');
                 setHolidayDate('');
                 setHolidayChangeReason('');
+                setHolidayModalError(null);
                 setIsHolidayModalOpen(true);
               }}
             >
@@ -1247,6 +1265,13 @@ export const AdminConfigPage: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-4 border border-niyam-border">
             <h3 className="text-lg font-bold text-niyam-text">Register Calendar Holiday</h3>
+
+            {holidayModalError && (
+              <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>{holidayModalError}</span>
+              </div>
+            )}
 
             <form onSubmit={handleCreateHoliday} className="space-y-3">
               <div>

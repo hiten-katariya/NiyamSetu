@@ -1,7 +1,7 @@
 from datetime import date, datetime
-from typing import List, Optional
+from typing import Any, List, Optional
 import uuid
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 from backend.app.schemas.common import BaseSchema
 
 
@@ -41,11 +41,51 @@ class UndertakingResponse(BaseSchema):
 
 
 class CreateUndertakingRequest(BaseModel):
-    application_id: uuid.UUID
-    title: str = Field(..., min_length=3, max_length=200)
-    description: str = Field(..., min_length=5, max_length=2000)
+    application_id: Optional[uuid.UUID] = None
+    title: str = Field(..., min_length=2, max_length=200)
+    condition_title: Optional[str] = None
+    description: str = Field(..., min_length=2, max_length=2000)
+    condition_description: Optional[str] = None
     due_date: date
     assigned_institution_id: Optional[uuid.UUID] = None
+    institution_id: Optional[uuid.UUID] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def reconcile_fields(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            # Resolve title from condition_title
+            t = str(data.get("title") or data.get("condition_title") or "").strip()
+            data["title"] = t
+            data["condition_title"] = t
+
+            # Resolve description from condition_description or title fallback
+            d = str(data.get("description") or data.get("condition_description") or t).strip()
+            data["description"] = d
+            data["condition_description"] = d
+
+            # Resolve institution
+            inst = data.get("assigned_institution_id") or data.get("institution_id")
+            if inst:
+                data["assigned_institution_id"] = inst
+                data["institution_id"] = inst
+        return data
+
+    @field_validator("title")
+    @classmethod
+    def validate_title(cls, v: str) -> str:
+        s = v.strip()
+        if len(s) < 2:
+            raise ValueError("Condition Title must be at least 2 characters.")
+        return s
+
+    @field_validator("description")
+    @classmethod
+    def validate_description(cls, v: str) -> str:
+        s = v.strip()
+        if len(s) < 2:
+            raise ValueError("Condition Description must be at least 2 characters.")
+        return s
 
 
 class ReviewUndertakingRequest(BaseModel):

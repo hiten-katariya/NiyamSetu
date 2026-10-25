@@ -12,7 +12,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { api, downloadFile } from '../../lib/apiClient';
-import { UndertakingItem } from '../../types';
+import { ApplicationItem, UndertakingItem } from '../../types';
 import { useAuth } from '../../app/AuthContext';
 import { Badge } from '../../components/Badge';
 import { Button } from '../../components/Button';
@@ -40,6 +40,8 @@ export const ComplianceListPage: React.FC = () => {
   const [conditionDescription, setConditionDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [targetInstitutionId, setTargetInstitutionId] = useState('');
+  const [targetApplicationId, setTargetApplicationId] = useState('');
+  const [availableApps, setAvailableApps] = useState<ApplicationItem[]>([]);
 
   const [evidenceRemarks, setEvidenceRemarks] = useState('');
   const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
@@ -64,12 +66,14 @@ export const ComplianceListPage: React.FC = () => {
     setError(null);
     try {
       const data = await api.get<UndertakingItem[]>('/undertakings');
-      setUndertakings(data);
+      const safeData = Array.isArray(data) ? data : [];
+      setUndertakings(safeData);
       if (selectedUndertaking) {
-        const updated = data.find((u) => u.id === selectedUndertaking.id);
+        const updated = safeData.find((u) => u.id === selectedUndertaking.id);
         if (updated) setSelectedUndertaking(updated);
       }
     } catch (err: unknown) {
+      setUndertakings([]);
       const msg = err instanceof Error ? err.message : 'Failed to load undertakings';
       setError(msg);
     } finally {
@@ -82,41 +86,71 @@ export const ComplianceListPage: React.FC = () => {
   }, []);
 
   // Metrics
-  const pendingCount = undertakings.filter((u) => u.status === 'pending').length;
-  const submittedCount = undertakings.filter((u) => u.status === 'submitted').length;
-  const fulfilledCount = undertakings.filter((u) => u.status === 'fulfilled').length;
-  const overdueCount = undertakings.filter((u) => u.status === 'overdue').length;
+  const safeUndertakings = Array.isArray(undertakings) ? undertakings : [];
+  const pendingCount = safeUndertakings.filter((u) => u.status === 'pending').length;
+  const submittedCount = safeUndertakings.filter((u) => u.status === 'submitted').length;
+  const fulfilledCount = safeUndertakings.filter((u) => u.status === 'fulfilled').length;
+  const overdueCount = safeUndertakings.filter((u) => u.status === 'overdue').length;
 
-  const filteredUndertakings = undertakings.filter((u) => {
+  const filteredUndertakings = safeUndertakings.filter((u) => {
     if (statusFilter !== 'all' && u.status !== statusFilter) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      const matchTitle = u.condition_title.toLowerCase().includes(q);
+      const matchTitle = (u.condition_title || '').toLowerCase().includes(q);
       const matchInst = u.institution_name?.toLowerCase().includes(q);
       if (!matchTitle && !matchInst) return false;
     }
     return true;
   });
 
-  const handleOpenCreateModal = () => {
+  const handleOpenCreateModal = async () => {
     setConditionTitle('');
     setConditionDescription('');
     setDueDate('');
+    setTargetApplicationId('');
     setTargetInstitutionId(user?.institution_id || '');
     setActionError(null);
     setIsCreateModalOpen(true);
+    try {
+      const res = await api.getPaginated<ApplicationItem>('/applications?page_size=100');
+      const apps = Array.isArray(res?.data) ? res.data : [];
+      setAvailableApps(apps);
+      if (apps.length > 0) {
+        setTargetApplicationId(apps[0].id);
+        if (apps[0].institution_id) {
+          setTargetInstitutionId(apps[0].institution_id);
+        }
+      }
+    } catch {
+      // Best effort; backend can still resolve if only 1 app exists
+    }
   };
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!conditionTitle.trim()) {
+      setActionError('Condition Title is required.');
+      return;
+    }
+    if (!dueDate) {
+      setActionError('Compliance Due Date is required.');
+      return;
+    }
     setIsSubmitting(true);
     setActionError(null);
     try {
+      const selectedApp = availableApps.find((a) => a.id === targetApplicationId);
+      const chosenInstId = targetInstitutionId || selectedApp?.institution_id || undefined;
       await api.post('/undertakings', {
-        condition_title: conditionTitle,
-        condition_description: conditionDescription.trim() ? conditionDescription.trim() : undefined,
+        application_id: targetApplicationId || undefined,
+        title: conditionTitle.trim(),
+        description: conditionDescription.trim() || conditionTitle.trim(),
         due_date: dueDate,
-        institution_id: targetInstitutionId || undefined,
+        assigned_institution_id: chosenInstId,
+        // Dual-compatible aliases
+        condition_title: conditionTitle.trim(),
+        condition_description: conditionDescription.trim() || conditionTitle.trim(),
+        institution_id: chosenInstId,
       });
       setIsCreateModalOpen(false);
       await fetchUndertakings();
@@ -524,6 +558,31 @@ export const ComplianceListPage: React.FC = () => {
             )}
 
             <form onSubmit={handleCreateSubmit} className="space-y-4">
+              {availableApps.length > 0 && (
+                <div>
+                  <label className="block text-xs font-medium text-niyam-text mb-1">
+                    Target Application *
+                  </label>
+                  <select
+                    value={targetApplicationId}
+                    onChange={(e) => {
+                      setTargetApplicationId(e.target.value);
+                      const app = availableApps.find((a) => a.id === e.target.value);
+                      if (app?.institution_id) {
+                        setTargetInstitutionId(app.institution_id);
+                      }
+                    }}
+                    className="w-full text-xs border border-niyam-border rounded px-3 py-2 bg-white text-niyam-text focus:outline-none focus:ring-1 focus:ring-niyam-primary"
+                  >
+                    {availableApps.map((app) => (
+                      <option key={app.id} value={app.id}>
+                        {app.reference_no} — {app.institution_name || 'Institution'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div>
                 <label className="block text-xs font-medium text-niyam-text mb-1">
                   Condition Title *

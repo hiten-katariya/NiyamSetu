@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import List, Optional
 import uuid
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from backend.app.schemas.common import BaseSchema
 
@@ -99,7 +99,23 @@ class HolidayCreateRequest(BaseModel):
     region_id: Optional[uuid.UUID] = None
     holiday_date: date
     name: str = Field(..., min_length=2)
-    change_reason: str = Field(..., min_length=3, description="Mandatory justification for holiday entry")
+    change_reason: str = Field(..., min_length=1, description="Mandatory justification for holiday entry")
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        s = v.strip()
+        if len(s) < 2:
+            raise ValueError("Holiday name must be at least 2 characters.")
+        return s
+
+    @field_validator("change_reason")
+    @classmethod
+    def validate_reason(cls, v: str) -> str:
+        s = v.strip()
+        if len(s) < 1:
+            raise ValueError("Change reason cannot be empty.")
+        return s
 
 
 class MessageTemplateSchema(BaseSchema):

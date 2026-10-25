@@ -18,7 +18,6 @@ import { api } from '../../lib/apiClient';
 import {
   EscalationItem,
   NotificationItem,
-  PaginatedResponse,
 } from '../../types';
 
 export const NotificationsPage: React.FC = () => {
@@ -28,6 +27,7 @@ export const NotificationsPage: React.FC = () => {
   const [escalations, setEscalations] = useState<EscalationItem[]>([]);
   const [statusFilter, setStatusFilter] = useState<'all' | 'unread'>('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isResolving, setIsResolving] = useState<string | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState('');
   const [resolveError, setResolveError] = useState<string | null>(null);
@@ -36,26 +36,37 @@ export const NotificationsPage: React.FC = () => {
   const fetchNotifications = useCallback(async () => {
     try {
       const endpoint = statusFilter === 'unread' ? '/notifications?status=unread' : '/notifications';
-      const res = await api.get<PaginatedResponse<NotificationItem>>(endpoint);
-      setNotifications(res.data);
+      const res = await api.get<NotificationItem[]>(endpoint);
+      setNotifications(Array.isArray(res) ? res : []);
     } catch (err) {
       console.error('Failed to load notifications', err);
+      setNotifications([]);
+      throw err;
     }
   }, [statusFilter]);
 
   const fetchEscalations = useCallback(async () => {
     try {
-      const res = await api.get<PaginatedResponse<EscalationItem>>('/escalations');
-      setEscalations(res.data);
+      const res = await api.get<EscalationItem[]>('/escalations');
+      setEscalations(Array.isArray(res) ? res : []);
     } catch (err) {
       console.error('Failed to load escalations', err);
+      setEscalations([]);
+      throw err;
     }
   }, []);
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
-    await Promise.all([fetchNotifications(), fetchEscalations()]);
-    setIsLoading(false);
+    setLoadError(null);
+    try {
+      await Promise.all([fetchNotifications(), fetchEscalations()]);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to load notifications or escalations';
+      setLoadError(msg);
+    } finally {
+      setIsLoading(false);
+    }
   }, [fetchNotifications, fetchEscalations]);
 
   useEffect(() => {
@@ -115,8 +126,10 @@ export const NotificationsPage: React.FC = () => {
     return <LoadingState message="Loading notifications & escalation alerts..." />;
   }
 
-  const unreadCount = notifications.filter((n) => n.status === 'unread').length;
-  const openEscalationCount = escalations.filter((e) => e.status === 'open').length;
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
+  const safeEscalations = Array.isArray(escalations) ? escalations : [];
+  const unreadCount = safeNotifications.filter((n) => n.status === 'unread').length;
+  const openEscalationCount = safeEscalations.filter((e) => e.status === 'open').length;
 
   return (
     <div className="space-y-6">
@@ -135,6 +148,21 @@ export const NotificationsPage: React.FC = () => {
           <Badge variant="neutral">Tamper-Evident Audit</Badge>
         </div>
       </div>
+
+      {loadError && (
+        <div className="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-lg text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>{loadError}</span>
+          </div>
+          <button
+            onClick={loadData}
+            className="px-3 py-1 bg-rose-600 text-white rounded font-medium hover:bg-rose-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      )}
 
       {actionSuccess && (
         <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded text-xs flex items-center gap-2">
@@ -205,7 +233,7 @@ export const NotificationsPage: React.FC = () => {
       {/* Tab 1: Notifications */}
       {activeTab === 'notifications' && (
         <div className="space-y-3">
-          {notifications.length === 0 ? (
+          {safeNotifications.length === 0 ? (
             <div className="p-8 text-center bg-niyam-surface border border-niyam-border rounded-lg">
               <CheckCircle className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
               <p className="text-sm font-semibold text-niyam-text">No Notifications</p>
@@ -214,7 +242,7 @@ export const NotificationsPage: React.FC = () => {
               </p>
             </div>
           ) : (
-            notifications.map((notif) => (
+            safeNotifications.map((notif) => (
               <Card
                 key={notif.id}
                 className={`transition-colors ${
@@ -278,7 +306,7 @@ export const NotificationsPage: React.FC = () => {
       {/* Tab 2: Escalations */}
       {activeTab === 'escalations' && (
         <div className="space-y-4">
-          {escalations.length === 0 ? (
+          {safeEscalations.length === 0 ? (
             <div className="p-8 text-center bg-niyam-surface border border-niyam-border rounded-lg">
               <ShieldAlert className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
               <p className="text-sm font-semibold text-niyam-text">No Active Escalations</p>
@@ -287,7 +315,7 @@ export const NotificationsPage: React.FC = () => {
               </p>
             </div>
           ) : (
-            escalations.map((esc) => (
+            safeEscalations.map((esc) => (
               <Card
                 key={esc.id}
                 className={`border-l-4 ${

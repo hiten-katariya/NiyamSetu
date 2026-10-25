@@ -13,23 +13,28 @@ import { ReportsPage } from '../features/reports/ReportsPage';
 import { AdminConfigPage } from '../features/admin/AdminConfigPage';
 import { LoginPage } from '../features/auth/LoginPage';
 import { AccessDeniedPage } from '../features/auth/AccessDeniedPage';
+import { RouteErrorBoundary } from '../components/ErrorBoundary/RouteErrorBoundary';
 
 export const router = createBrowserRouter([
   {
     path: '/landing',
     element: <LandingPage />,
+    errorElement: <RouteErrorBoundary />,
   },
   {
     path: '/overview',
     element: <LandingPage />,
+    errorElement: <RouteErrorBoundary />,
   },
   {
     path: '/login',
     element: <LoginPage />,
+    errorElement: <RouteErrorBoundary />,
   },
   {
     path: '/access-denied',
     element: <AccessDeniedPage />,
+    errorElement: <RouteErrorBoundary />,
   },
   {
     element: (
@@ -37,6 +42,7 @@ export const router = createBrowserRouter([
         <AppShell />
       </ProtectedRoute>
     ),
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         path: '/',

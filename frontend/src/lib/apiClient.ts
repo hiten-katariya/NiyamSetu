@@ -1,4 +1,4 @@
-import { ApiErrorResponse, ApiResponse } from '../types';
+import { ApiErrorResponse, PaginatedResponse } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
 
@@ -8,7 +8,14 @@ export class ApiClientError extends Error {
   details?: Array<{ field?: string; message: string }>;
 
   constructor(status: number, errorData: ApiErrorResponse['error']) {
-    super(errorData.message || 'An API error occurred');
+    let msg = errorData.message || 'An API error occurred';
+    if (errorData.details && errorData.details.length > 0) {
+      const fieldDetails = errorData.details
+        .map((d) => (d.field && d.field !== 'request' ? `${d.field}: ${d.message}` : d.message))
+        .join('; ');
+      msg = `${msg}: ${fieldDetails}`;
+    }
+    super(msg);
     this.name = 'ApiClientError';
     this.status = status;
     this.code = errorData.code || 'API_ERROR';
@@ -97,8 +104,52 @@ export async function apiRequest<T>(
     return {} as T;
   }
 
-  const json: ApiResponse<T> = await response.json();
-  return json.data;
+  const json = await response.json();
+  if (json && typeof json === 'object' && 'data' in json) {
+    return json.data as T;
+  }
+  return json as T;
+}
+
+export async function apiRequestPaginated<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<PaginatedResponse<T>> {
+  const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const headers = new Headers(options.headers || {});
+
+  const response = await fetch(url, {
+    ...options,
+    method: 'GET',
+    credentials: 'include',
+    headers,
+  });
+
+  if (!response.ok) {
+    let errorData: ApiErrorResponse['error'] = {
+      code: `HTTP_${response.status}`,
+      message: response.statusText || 'Request failed',
+    };
+    try {
+      const parsed = await response.json();
+      if (parsed.error) {
+        errorData = parsed.error;
+      }
+    } catch {
+      // Non-JSON response
+    }
+    throw new ApiClientError(response.status, errorData);
+  }
+
+  const json = await response.json();
+  const data = Array.isArray(json?.data) ? json.data : (Array.isArray(json) ? json : []);
+  const meta = json?.meta || {
+    page: 1,
+    page_size: data.length,
+    total: data.length,
+    total_pages: 1,
+  };
+  return { data, meta };
 }
 
 export async function downloadFile(endpoint: string, defaultFilename = 'download'): Promise<void> {
@@ -137,6 +188,8 @@ export async function downloadFile(endpoint: string, defaultFilename = 'download
 export const api = {
   get: <T>(endpoint: string, options?: RequestInit) =>
     apiRequest<T>(endpoint, { ...options, method: 'GET' }),
+  getPaginated: <T>(endpoint: string, options?: RequestInit) =>
+    apiRequestPaginated<T>(endpoint, options),
   post: <T>(endpoint: string, body?: unknown, options?: RequestInit) =>
     apiRequest<T>(endpoint, {
       ...options,
