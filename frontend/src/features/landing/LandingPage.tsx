@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
+import { IntegrityTicker } from './components/IntegrityTicker';
 import { TrustStrip } from './components/TrustStrip';
 import { ShowcaseSection } from './components/ShowcaseSection';
 import { PlatformOverview } from './components/PlatformOverview';
 import { CapabilitiesBento } from './components/CapabilitiesBento';
 import { WorkflowTimeline } from './components/WorkflowTimeline';
+import { WorkflowSimulator } from './components/WorkflowSimulator';
 import { SecuritySection } from './components/SecuritySection';
 import { InteractivePreview } from './components/InteractivePreview';
 import { StakeholderBenefits } from './components/StakeholderBenefits';
@@ -28,6 +30,9 @@ export const LandingPage: React.FC = () => {
         {/* Hero Section */}
         <Hero />
 
+        {/* Live Integrity Pulse Ticker */}
+        <IntegrityTicker />
+
         {/* 4 Pillars Trust Strip */}
         <TrustStrip />
 
@@ -36,6 +41,9 @@ export const LandingPage: React.FC = () => {
 
         {/* Platform Architecture & Interconnection Overview */}
         <PlatformOverview />
+
+        {/* Interactive 5-Stage Lifecycle Simulator */}
+        <WorkflowSimulator />
 
         {/* Capabilities Bento Grid */}
         <CapabilitiesBento />

@@ -20,11 +20,11 @@ export const Footer: React.FC = () => {
           {/* Brand Col */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-niyam-primary flex items-center justify-center text-white font-extrabold text-sm shadow-xs overflow-hidden">
+              <div className="w-9 h-9 rounded-xl bg-white border border-niyam-border flex items-center justify-center shadow-xs overflow-hidden p-0.5">
                 <img
-                  src="/logo.png"
+                  src="/small-logo.png"
                   alt="NiyamSetu Logo"
-                  className="w-full h-full object-contain p-0.5"
+                  className="w-full h-full object-contain"
                   onError={(e) => {
                     (e.currentTarget as HTMLElement).style.display = 'none';
                     e.currentTarget.parentElement!.innerText = 'NS';

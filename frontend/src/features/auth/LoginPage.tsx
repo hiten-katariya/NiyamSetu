@@ -63,8 +63,16 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-niyam-bg flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="w-12 h-12 rounded-lg bg-niyam-primary text-white font-bold flex items-center justify-center text-lg mx-auto shadow-md">
-          NS
+        <div className="w-14 h-14 rounded-2xl bg-white border border-niyam-border flex items-center justify-center mx-auto shadow-md overflow-hidden p-1.5 mb-2">
+          <img
+            src="/small-logo.png"
+            alt="NiyamSetu Logo"
+            className="w-full h-full object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              if (e.currentTarget.parentElement) e.currentTarget.parentElement.innerText = 'NS';
+            }}
+          />
         </div>
         <h2 className="mt-4 text-2xl font-bold text-niyam-text tracking-tight">
           NiyamSetu

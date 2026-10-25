@@ -1,45 +1,7 @@
 import React, { useState } from 'react';
-import { CircularCarousel, CarouselItem } from '../../../components/CircularCarousel/CircularCarousel';
+import { CircularCarousel } from '../../../components/CircularCarousel/CircularCarousel';
 import { Sparkles, MoveHorizontal } from 'lucide-react';
-
-const CAROUSEL_MODULES: CarouselItem[] = [
-  {
-    src: '/carousel/workflow.svg',
-    alt: 'Configurable Application Workflow Routing Engine',
-    title: 'Workflow Engine',
-    subtitle: 'Dynamic Stage Progression & Pinned Route Versions',
-  },
-  {
-    src: '/carousel/deadlines.svg',
-    alt: 'Deadline Intelligence and Working-Day Calendar Calculations',
-    title: 'Deadline Intelligence',
-    subtitle: 'Working-Day SLAs, Reminders & Escalations',
-  },
-  {
-    src: '/carousel/evc.svg',
-    alt: 'Expert Visit Committee Scheduling and Audit Verification',
-    title: 'EVC Management',
-    subtitle: 'Committee Scoping & Inspection Review',
-  },
-  {
-    src: '/carousel/compliance.svg',
-    alt: 'Time-Bound Undertakings and Dual-Control Evidence Verification',
-    title: 'Compliance Undertakings',
-    subtitle: 'Time-Bound Conditions & Approval',
-  },
-  {
-    src: '/carousel/documents.svg',
-    alt: 'Document Expiry Tracking and Versioned Renewal History',
-    title: 'Document Governance',
-    subtitle: 'Validity Timelines & Checksums',
-  },
-  {
-    src: '/carousel/audit.svg',
-    alt: 'Cryptographic SHA-256 Chained Audit Trail and Tamper Alarms',
-    title: 'Audit Hash Chain',
-    subtitle: 'Immutable Ledger & Verification',
-  },
-];
+import { CAROUSEL_MODULES } from './carouselData';
 
 export const ShowcaseSection: React.FC = () => {
   const [activeModule, setActiveModule] = useState(0);

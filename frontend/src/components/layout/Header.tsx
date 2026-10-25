@@ -52,8 +52,16 @@ export const Header: React.FC<{ onMenuToggle: () => void }> = ({ onMenuToggle })
           </svg>
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded bg-niyam-primary text-white font-bold flex items-center justify-center text-sm shadow-sm">
-            NS
+          <div className="w-8 h-8 rounded-lg bg-white border border-niyam-border flex items-center justify-center shadow-xs overflow-hidden p-0.5">
+            <img
+              src="/small-logo.png"
+              alt="NiyamSetu Logo"
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                if (e.currentTarget.parentElement) e.currentTarget.parentElement.innerText = 'NS';
+              }}
+            />
           </div>
           <div>
             <h1 className="text-base font-bold text-niyam-primary tracking-tight leading-none">

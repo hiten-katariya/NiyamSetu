@@ -52,15 +52,15 @@ export const Navbar: React.FC = () => {
           className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-niyam-focus rounded-lg p-1"
           aria-label="NiyamSetu Home"
         >
-          <div className="w-9 h-9 rounded-lg bg-niyam-primary flex items-center justify-center shadow-xs overflow-hidden border border-white/20 transition-transform group-hover:scale-105">
+          <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-xs overflow-hidden border border-niyam-border p-0.5 transition-transform group-hover:scale-105">
             <img
-              src="/logo.png"
+              src="/small-logo.png"
               alt="NiyamSetu Logo"
-              className="w-full h-full object-contain p-1"
+              className="w-full h-full object-contain"
               onError={(e) => {
                 // Fallback to text initials if image fails to load
                 (e.currentTarget as HTMLElement).style.display = 'none';
-                e.currentTarget.parentElement!.innerHTML = '<span class="text-white font-black text-sm">NS</span>';
+                e.currentTarget.parentElement!.innerHTML = '<span class="text-niyam-primary font-black text-sm">NS</span>';
               }}
             />
           </div>

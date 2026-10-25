@@ -901,6 +901,108 @@ export const CircularCarousel: React.FC<CircularCarouselProps> = ({
           className="circular-carousel__frame"
           style={{ height: axis === 'x' ? size : cardH, borderRadius: frameRadius }}
         >
+          {/* Card Surface Fallback: renders seamless title, badge, and diagram so the card is never blank */}
+          <div
+            className="circular-carousel__fallback"
+            style={{
+              position: 'absolute',
+              ...photoStyle,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              padding: '20px 18px',
+              background: 'linear-gradient(150deg, #FFFFFF 0%, #F8FAFC 50%, #EDF2F7 100%)',
+              border: '1.5px solid #CBD5E1',
+              borderRadius: '16px',
+              boxSizing: 'border-box',
+              pointerEvents: 'none',
+              userSelect: 'none',
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '3px 9px',
+                  borderRadius: '999px',
+                  background: '#E0F2FE',
+                  color: '#0369A1',
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '8px',
+                }}
+              >
+                <span>Core Module 0{index + 1}</span>
+              </div>
+              <div
+                style={{
+                  fontSize: '18px',
+                  fontWeight: 900,
+                  color: '#0F172A',
+                  lineHeight: '1.2',
+                  letterSpacing: '-0.02em',
+                  marginBottom: '4px',
+                }}
+              >
+                {item.title || 'System Module'}
+              </div>
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: '#475569',
+                  lineHeight: '1.35',
+                }}
+              >
+                {item.subtitle || 'Configurable AICTE Workflow Architecture'}
+              </div>
+            </div>
+
+            {/* Middle visual diagram box */}
+            <div
+              style={{
+                padding: '10px 12px',
+                borderRadius: '8px',
+                background: '#FFFFFF',
+                border: '1px solid #E2E8F0',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Workflow Stage</span>
+                <span style={{ fontSize: '10px', fontWeight: 800, color: '#16A34A', background: '#DCFCE7', padding: '1px 6px', borderRadius: '4px' }}>Active</span>
+              </div>
+              <div style={{ height: '5px', borderRadius: '999px', background: '#E2E8F0', overflow: 'hidden' }}>
+                <div style={{ width: `${35 + index * 12}%`, height: '100%', background: 'linear-gradient(90deg, #0284C7, #38BDF8)', borderRadius: '999px' }} />
+              </div>
+            </div>
+
+            {/* Bottom guarantee badge */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '7px 9px',
+                borderRadius: '8px',
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                fontSize: '10px',
+                fontWeight: 700,
+                color: '#1E3A8A',
+              }}
+            >
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0284C7', flexShrink: 0 }} />
+              <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                SHA-256 Ledger Verified &bull; Scoped RBAC
+              </span>
+            </div>
+          </div>
+
           <img
             className="circular-carousel__photo"
             src={item.src}
@@ -908,6 +1010,9 @@ export const CircularCarousel: React.FC<CircularCarouselProps> = ({
             draggable={false}
             decoding="async"
             style={photoStyle}
+            onError={(e) => {
+              (e.currentTarget as HTMLElement).style.display = 'none';
+            }}
           />
           {gone && (
             <img
@@ -918,6 +1023,9 @@ export const CircularCarousel: React.FC<CircularCarouselProps> = ({
               draggable={false}
               decoding="async"
               style={{ ...photoStyle, animationDelay: `${Math.round(leaving.delays[index])}ms` }}
+              onError={(e) => {
+                (e.currentTarget as HTMLElement).style.display = 'none';
+              }}
             />
           )}
           {back && <div className="circular-carousel__inner" />}

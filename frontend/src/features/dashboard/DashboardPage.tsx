@@ -25,6 +25,7 @@ import { Link } from 'react-router-dom';
 import { Badge } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
+import { AeroShards } from '../../components/AeroShards';
 import { api } from '../../lib/apiClient';
 import { useAuth } from '../../app/AuthContext';
 import {
@@ -129,33 +130,58 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-niyam-border">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-niyam-text">
-            Workflow Analytics & Operational Command
+      {/* Top Banner with AeroShards 3D Background */}
+      <div className="relative w-full rounded-2xl overflow-hidden border border-purple-200/80 shadow-md bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 text-white p-6 sm:p-8 min-h-[200px] flex flex-col justify-between">
+        <div className="absolute inset-0 z-0 opacity-75 pointer-events-auto">
+          <AeroShards
+            shardColor="#896ABD"
+            accentColor="#A855F7"
+            placement="full"
+            material="glass"
+            markers="plus"
+            count={1300}
+            depthOfField={0.75}
+            vignette={0.3}
+            mouseInteraction
+            pulseOnClick
+            holdToGather
+          />
+        </div>
+        <div className="relative z-10 max-w-3xl pointer-events-none">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-purple-200 mb-3">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>AICTE Institutional Command &bull; Active Portal Session</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            Workflow Analytics &amp; Operational Command
           </h2>
-          <p className="text-sm text-niyam-text-muted mt-1">
-            Real-time stage SLA monitoring, volume trend forecasting, compliance health, and background worker status.
+          <p className="mt-2 text-xs sm:text-sm text-purple-100/90 leading-relaxed font-normal">
+            Welcome, <span className="font-bold text-white">{user?.full_name || user?.email}</span> ({user?.role?.replace('_', ' ').toUpperCase()}). Real-time stage SLA monitoring, volume trend forecasting, compliance health, and background worker status.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          {operationalSummary && (
-            <Badge
-              variant={
-                operationalSummary.worker_status === 'operational'
-                  ? 'success'
-                  : operationalSummary.worker_status === 'stale'
-                  ? 'warning'
-                  : 'neutral'
-              }
-            >
-              Worker: {operationalSummary.worker_status.toUpperCase()}
-            </Badge>
-          )}
-          <Button variant="outline" size="sm" onClick={loadData} disabled={isLoading}>
-            <RefreshCw className={`w-3.5 h-3.5 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/10 mt-4">
+          <div className="flex items-center gap-2">
+            {operationalSummary && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-xs font-semibold text-white">
+                <span className={`w-2 h-2 rounded-full ${
+                  operationalSummary.worker_status === 'operational' ? 'bg-emerald-400' : 'bg-amber-400'
+                }`} />
+                Worker: {operationalSummary.worker_status.toUpperCase()}
+              </span>
+            )}
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/20 backdrop-blur-md border border-purple-300/30 text-xs text-purple-200 font-medium hidden sm:inline-flex">
+              3D Glass Shards Reactive
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={loadData}
+            disabled={isLoading}
+            className="bg-white/15 hover:bg-white/25 text-white border-white/30 backdrop-blur-md shadow-xs"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${isLoading ? 'animate-spin' : ''}`} />
+            Sync Dashboard
           </Button>
         </div>
       </div>

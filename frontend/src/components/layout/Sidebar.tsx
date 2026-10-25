@@ -140,9 +140,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         }`}
       >
         <div className="h-16 flex items-center justify-between px-6 border-b border-niyam-border">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded bg-niyam-primary text-white font-bold flex items-center justify-center text-xs">
-              NS
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-white border border-niyam-border flex items-center justify-center shadow-xs overflow-hidden p-0.5">
+              <img
+                src="/small-logo.png"
+                alt="NiyamSetu Logo"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  if (e.currentTarget.parentElement) e.currentTarget.parentElement.innerText = 'NS';
+                }}
+              />
             </div>
             <span className="font-bold text-niyam-text text-base">NiyamSetu</span>
           </div>
