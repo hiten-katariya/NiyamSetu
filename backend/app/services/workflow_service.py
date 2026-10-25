@@ -3,7 +3,7 @@ import secrets
 from typing import Any, Dict, List, Optional
 import uuid
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 from backend.app.core.exceptions import AppException, ForbiddenError, NotFoundError
 from backend.app.models.entities import (
@@ -241,12 +241,12 @@ class WorkflowService:
         Guarantees row-level concurrency protection, stage role verification,
         atomic history insertion, and audit trail generation.
         """
-        # Row-level lock against concurrent modifications
+        # Row-level lock against concurrent modifications (using selectinload + of=Application for Postgres compatibility)
         stmt = (
             select(Application)
             .where(Application.id == application_id)
-            .options(joinedload(Application.institution))
-            .with_for_update()
+            .options(selectinload(Application.institution))
+            .with_for_update(of=Application)
         )
         app = db.scalars(stmt).first()
         if not app:
@@ -371,8 +371,8 @@ class WorkflowService:
         stmt = (
             select(Application)
             .where(Application.id == application_id)
-            .options(joinedload(Application.institution))
-            .with_for_update()
+            .options(selectinload(Application.institution))
+            .with_for_update(of=Application)
         )
         app = db.scalars(stmt).first()
         if not app:
@@ -478,8 +478,8 @@ class WorkflowService:
         stmt = (
             select(Application)
             .where(Application.id == application_id)
-            .options(joinedload(Application.institution))
-            .with_for_update()
+            .options(selectinload(Application.institution))
+            .with_for_update(of=Application)
         )
         app = db.scalars(stmt).first()
         if not app:
@@ -544,8 +544,8 @@ class WorkflowService:
         stmt = (
             select(Application)
             .where(Application.id == application_id)
-            .options(joinedload(Application.institution))
-            .with_for_update()
+            .options(selectinload(Application.institution))
+            .with_for_update(of=Application)
         )
         app = db.scalars(stmt).first()
         if not app:
@@ -612,8 +612,8 @@ class WorkflowService:
         stmt = (
             select(Application)
             .where(Application.id == application_id)
-            .options(joinedload(Application.institution))
-            .with_for_update()
+            .options(selectinload(Application.institution))
+            .with_for_update(of=Application)
         )
         app = db.scalars(stmt).first()
         if not app:

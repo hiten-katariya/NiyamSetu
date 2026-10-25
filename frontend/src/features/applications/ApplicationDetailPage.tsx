@@ -97,13 +97,15 @@ export const ApplicationDetailPage: React.FC = () => {
         });
         setActionSuccess('Application resumed from hold.');
       } else if (actionType === 'assign') {
-        if (!assignUserId.trim()) {
-          setModalError('Please specify the reviewer user UUID.');
+        const trimmedTarget = assignUserId.trim();
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!trimmedTarget || !uuidRegex.test(trimmedTarget)) {
+          setModalError('Please enter a valid reviewer user UUID (e.g. 550e8400-e29b-41d4-a716-446655440000).');
           setIsSubmitting(false);
           return;
         }
         await api.post(`/applications/${id}/assign`, {
-          target_user_id: assignUserId.trim(),
+          target_user_id: trimmedTarget,
           notes: assignNotes || undefined,
         });
         setActionSuccess('Application successfully assigned to reviewer desk.');
