@@ -12,6 +12,7 @@ import {
 import { useAuth } from '../../../app/AuthContext';
 import { InteractiveHeadline } from './InteractiveHeadline';
 import { SwarmCursor } from '../../../components/SwarmCursor';
+import { InstitutionalHeroBackground } from './InstitutionalHeroBackground';
 
 export const Hero: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -19,6 +20,9 @@ export const Hero: React.FC = () => {
 
   return (
     <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FB] to-[#EEF2F7]">
+      {/* Dynamic Animated Dual Background (AeroShards + Connected Institutional Network) */}
+      <InstitutionalHeroBackground />
+
       {/* Decorative background glow & mesh circles */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none select-none z-0">
         <div className="absolute -top-32 left-1/4 w-[36rem] h-[36rem] bg-niyam-primary-tint/50 rounded-full blur-3xl opacity-70" />
