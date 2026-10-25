@@ -271,11 +271,11 @@ export const InstitutionalHeroBackground: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none z-0"
+      className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none z-0 bg-transparent"
       aria-hidden="true"
     >
       {/* LAYER 1: WebGPU AeroShards in Light Mode (Depth & Reflections) */}
-      <div className="absolute inset-0 w-full h-full opacity-55 transition-opacity duration-700">
+      <div className="absolute inset-0 w-full h-full opacity-85 transition-opacity duration-700">
         <AeroShards
           shardColor="#0284c7"
           accentColor="#6366f1"
@@ -299,9 +299,6 @@ export const InstitutionalHeroBackground: React.FC = () => {
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"
       />
-
-      {/* LAYER 3: Subtle bottom fade to seamlessly blend into next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#EEF2F7] to-transparent pointer-events-none" />
     </div>
   );
 };

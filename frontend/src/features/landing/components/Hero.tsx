@@ -19,7 +19,7 @@ export const Hero: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#EEF2F7]">
+    <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden bg-transparent">
       {/* Dynamic Animated Dual Background (AeroShards + Connected Institutional Network) */}
       <InstitutionalHeroBackground />
 
