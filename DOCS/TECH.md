@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-This document describes how NiyamSetu will be built to meet the PRD: architecture, data model, the workflow and deadline engines, security, APIs and the testing approach. Where the APH or AICTE has not given us a figure, we describe how it is configured, not what it is.
+This document describes how NiyamSetu will be built to meet the PRD: architecture, data model, the workflow and deadline engines, security, APIs and the testing approach. Where the APH or AICTE has not given us a figure, we describe how it is configured.
 
 ## 2. Design principles
 

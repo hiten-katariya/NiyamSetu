@@ -1,14 +1,4 @@
-"""
-NiyamSetu Combined Local Service Runner.
 
-Spawns and manages both:
-1. The FastAPI Backend API server (uvicorn on port 8000)
-2. The Background Worker process (worker/run.py with APScheduler)
-
-Maintains architectural decoupling: each runs in its own separate operating system
-process, without executing background jobs inside API startup.
-Pressing CTRL+C shuts down both processes gracefully.
-"""
 import os
 import signal
 import subprocess
